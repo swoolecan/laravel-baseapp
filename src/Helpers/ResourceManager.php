@@ -64,6 +64,7 @@ class ResourceManager
         $action = self::formatRouteAction($route, $domainRoute);
         $name = $domainRoute['name'] ?? $controller . '.' . $action;
         //echo '/' . $route . '====' . serialize($methods) . '--' . $controller . '==' . $action . '===' . $name . "\n <br />";
+        $controller = '\ModuleInfocms\Controllers\Web\\' . ucfirst($controller);
         if ($methods === 'any') {
             \Route::any('/' . $route, ucfirst($controller) . 'Controller@' . $action)->name($name);
         } else {
@@ -81,9 +82,13 @@ class ResourceManager
         return Str::camel($action);
     }
 
-    public static throwException($code = 400, $message = '参数有误')
+    public static function initRouteDatas()
+    {
+        return [];
+    }
+
+    public static function throwException($code = 400, $message = '参数有误')
     {
         throw new BusinessException($code, $message);
     }
-}
 }

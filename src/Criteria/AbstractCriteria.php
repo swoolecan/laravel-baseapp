@@ -5,7 +5,7 @@ namespace Framework\Baseapp\Criteria;
 use Prettus\Repository\Contracts\CriteriaInterface;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
-abstract class Criteria implements CriteriaInterface
+abstract class AbstractCriteria implements CriteriaInterface
 {
     protected $field;
     protected $value;

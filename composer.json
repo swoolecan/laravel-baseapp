@@ -51,7 +51,10 @@
     "autoload": {
         "psr-4": {
             "Framework\\Baseapp\\": "src/"
-        }
+        },
+        "files": [
+            "src/Functions/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
