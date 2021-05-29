@@ -4,16 +4,19 @@ namespace Framework\Baseapp\Helpers;
 
 use Illuminate\Support\Str;
 use Framework\Baseapp\Exceptions\BusinessException;
+use Swoolecan\Foundation\Helpers\TraitResourceContainer;
 
 /**
- * Class ResourceManager
+ * Class ResourceContainer
  *
  * @category Framework\Baseapp
  * @package Framework\Baseapp\Helpers
  * @license https://opensource.org/licenses/MIT MIT
  */
-class ResourceManager
+class ResourceContainer
 {
+    use TraitResourceContainer;
+
     public static function getModel($code, $module = '')
     {
         return self::getPointObject('model', $code, $module);
