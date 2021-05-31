@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use EasyWeChat\Factory;
 use Illuminate\Support\Str;

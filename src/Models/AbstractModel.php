@@ -5,6 +5,7 @@ namespace Framework\Baseapp\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Prettus\Repository\Presenter\ModelFractalPresenter;
+use Swoolecan\Foundation\Models\TraitModel;
 
 /**
  * Class AbstractModel
@@ -16,6 +17,8 @@ use Prettus\Repository\Presenter\ModelFractalPresenter;
  */
 class AbstractModel extends Model
 {
+    use TraitModel;
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);

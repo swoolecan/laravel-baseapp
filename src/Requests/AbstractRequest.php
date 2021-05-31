@@ -5,6 +5,7 @@ namespace Framework\Baseapp\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Swoolecan\Foundation\Requests\TraitRequest;
 
 /**
  * Class AbstractRequest
@@ -14,6 +15,8 @@ use Illuminate\Http\Exceptions\HttpResponseException;
  */
 class AbstractRequest extends FormRequest
 {
+    use TraitRequest;
+
     /**
      * The route to redirect to if validation fails.
      *

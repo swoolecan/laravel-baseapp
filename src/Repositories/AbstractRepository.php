@@ -5,6 +5,7 @@ namespace Framework\Baseapp\Repositories;
 use Prettus\Repository\Eloquent\BaseRepository;
 
 use Framework\Baseapp\Criteria\RequestCriteria;
+use Swoolecan\Baseapp\Repositories\TraitRepository;
 
 /**
  * Class AbstractRepository
@@ -15,9 +16,7 @@ use Framework\Baseapp\Criteria\RequestCriteria;
  */
 abstract class AbstractRepository extends BaseRepository
 {
-    use TraitField;
-    use TraitData;
-    use TraitTree;
+    use TraitRepository;
 
     public function __construct()
     {
