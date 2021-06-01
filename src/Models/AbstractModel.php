@@ -37,7 +37,6 @@ class AbstractModel extends Model
         return $results;
     }
 
-
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);

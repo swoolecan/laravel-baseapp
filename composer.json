@@ -10,7 +10,6 @@
         "doctrine/dbal": "2.11.1",
         "fideloper/proxy": "4.4.0",
         "fruitcake/laravel-cors": "2.0.2",
-        "guzzlehttp/guzzle": "^7.0.1",
         "inertiajs/inertia-laravel": "^0.2.4",
         "laravel/framework": "8.9.0",
         "laravel/horizon": "5.2.1",
