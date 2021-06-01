@@ -3,8 +3,9 @@
 namespace Framework\Baseapp\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
-
 use Framework\Baseapp\Criteria\RequestCriteria;
+use Framework\Baseapp\Helpers\ResourceContainer;
+use Swoolecan\Foundation\Repositories\TraitRepository;
 
 /**
  * Class AbstractRepository
@@ -15,19 +16,19 @@ use Framework\Baseapp\Criteria\RequestCriteria;
  */
 abstract class AbstractRepository extends BaseRepository
 {
-    use TraitField;
-    use TraitData;
-    use TraitTree;
+    use TraitRepository;
 
     public function __construct()
     {
         $app = app();
+        $this->resource = app(ResourceContainer::class);
+        $this->config = config();
         parent::__construct($app);
     }
 
     public function model()
     {
-        return null;
+        return $this->resource->getClassName('model', get_called_class());
     }
 
     public function getModuleCode()
@@ -43,7 +44,6 @@ abstract class AbstractRepository extends BaseRepository
     public function getModel()
     {
         $modelCode = !empty($this->pointModel) ? $this->pointModel : get_called_class();
-        \
         $this->model = $this->resource->getObject('model', $modelCode);
         //$this->criteria = $collection;
         $this->resetScope();

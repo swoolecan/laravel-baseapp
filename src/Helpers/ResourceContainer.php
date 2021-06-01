@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Framework\Baseapp\Helpers;
 
 use Illuminate\Support\Str;
 use Framework\Baseapp\Exceptions\BusinessException;
 use Swoolecan\Foundation\Helpers\TraitResourceContainer;
+use Framework\Baseapp\Services\RedisService;
+
+//use Hyperf\Cache\Annotation\Cacheable;
 
 /**
  * Class ResourceContainer
@@ -17,17 +22,36 @@ class ResourceContainer
 {
     use TraitResourceContainer;
 
-    public static function getModel($code, $module = '')
+    public function __construct()
+    {
+        $config = app('config');
+        $this->config = $config;
+        $this->request = request();
+        $this->appCode = $appCode = $this->config->get('app.app_code');
+        $resources = $this->getResourceDatas('resources');
+        if (empty($resources)) {
+            $this->throwException(500, '应用资源不存在');
+        }
+        $this->resources = $resources;
+    }
+
+    protected function getResourceDatas($key = 'resources')
+    {
+        $datas = $this->config->get('resource');
+        return $datas;
+    }
+
+    public function getModel($code, $module = '')
     {
         return self::getPointObject('model', $code, $module);
     }
 
-    public static function getRepository($code, $module = '')
+    public function getRepository($code, $module = '')
     {
         return self::getPointObject('repository', $code, $module);
     }
 
-    public static function getPointObject($type, $code, $module, $returnObj = true)
+    public function getPointObject($type, $code, $module, $returnObj = true)
     {
         $types = [
             'repository' => 'Repositories',
@@ -53,13 +77,13 @@ class ResourceContainer
         return $model;
     }*/
 
-    public static function getRouteParam($param)
+    public function getRouteParam($param)
     {
         $param = \Request::route($param);
         return $param;
     }
 
-    public static function setRoute($route, $domain, $domainRoutes)
+    public function setRoute($route, $domain, $domainRoutes)
     {
         $domainRoute = $domainRoutes[$route] ?? [];
         $methods = $domainRoute['methods'] ?? ['GET'];
@@ -75,7 +99,7 @@ class ResourceContainer
         }
     }
 
-    public static function formatRouteAction($route, $domainRoute)
+    public function formatRouteAction($route, $domainRoute)
     {
         $action = $domainRoute['action'] ?? $route;
         $action = empty($action) ? 'home' : $action;
@@ -85,13 +109,29 @@ class ResourceContainer
         return Str::camel($action);
     }
 
-    public static function initRouteDatas()
+    public function initRouteDatas()
     {
-        return [];
+        $routes = $this->config->get('routes');
+        return $routes;
     }
 
-    public static function throwException($code = 400, $message = '参数有误')
+    public function throwException($code = 400, $message = '参数有误')
     {
         throw new BusinessException($code, $message);
+    }
+
+    public function strOperation($string, $operation, $params = [])
+    {
+        switch ($operation) {
+        case 'singular':
+            return Str::singular($string);
+        case 'studly':
+            return Str::studly($string);
+        }
+    }
+
+    public function getObjectByClass($class)
+    {
+        return app()->make($class);
     }
 }

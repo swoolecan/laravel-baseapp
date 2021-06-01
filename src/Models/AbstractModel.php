@@ -5,6 +5,7 @@ namespace Framework\Baseapp\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Prettus\Repository\Presenter\ModelFractalPresenter;
+use Swoolecan\Foundation\Models\TraitModel;
 
 /**
  * Class AbstractModel
@@ -16,6 +17,27 @@ use Prettus\Repository\Presenter\ModelFractalPresenter;
  */
 class AbstractModel extends Model
 {
+    use TraitModel;
+
+    public function getColumnElems($type = 'keyValue')
+    {
+        //$results = $this->getConnection()->getSchemaBuilder()->getColumnType($this->getTable());
+        //$results = \Schema::getColumnListing($this->getTable());
+        //$results = $this->getConnection()->getDoctrineSchemaManager()->listTableColumns($this->getTable());
+        //$results = $this->getConnection()->getDoctrineSchemaManager()->listTableDetails($this->getTable())->getColumn('code');;
+        $results = $this->getConnection()->getDoctrineSchemaManager()->listTableColumns($this->getConnection()->getTablePrefix() . $this->getTable());
+        $datas = [];
+        if ($type == 'keyValue') {
+            $datas = [];
+            foreach ($results as $result) {
+                $datas[$result->getName()] = $result->getComment();//empty($result['column_comment']) ? $result['column_name'] : $result['column_comment'];
+            }
+            return $datas;
+        }
+        return $results;
+    }
+
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);

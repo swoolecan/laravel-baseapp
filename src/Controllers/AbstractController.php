@@ -3,13 +3,19 @@
 namespace Framework\Baseapp\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
+use Swoolecan\Foundation\Controllers\TraitController;
+use Framework\Baseapp\Helpers\ResourceContainer;
 
 abstract class AbstractController extends BaseController
 {
-    use OperationTrait;
+    use TraitController;
+
+    public $resource;
 
     public function __construct()
     {
+        $this->resource = app(ResourceContainer::class);
+        $this->request = request();
     }
 
     public function getRequestObj($scene = '', $repository = null, $code = '')
