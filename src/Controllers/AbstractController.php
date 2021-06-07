@@ -11,12 +11,19 @@ abstract class AbstractController extends BaseController
     use TraitController;
 
     public $resource;
+    public $config;
     public $request;
 
     public function __construct()
     {
         $this->resource = app(ResourceContainer::class);
+        $this->config = config();
         $this->request = request();
+    }
+
+    public function success($datas)
+    {
+        return \responseJson(200, 'success', $datas);
     }
 
     /*public function getRequest()
