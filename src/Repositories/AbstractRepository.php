@@ -84,4 +84,16 @@ abstract class AbstractRepository extends BaseRepository
 
         return $this->parserResult($posts);
     }
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @param array $columns
+     * @return mixed
+     */
+    public function findBy($attribute, $value, $columns = ['*'])
+    {
+        $this->applyCriteria();
+        return $this->model->where($attribute, '=', $value)->first($columns);
+    }
 }

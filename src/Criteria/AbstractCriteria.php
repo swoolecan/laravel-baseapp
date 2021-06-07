@@ -4,11 +4,11 @@ namespace Framework\Baseapp\Criteria;
 
 use Prettus\Repository\Contracts\CriteriaInterface;
 use Prettus\Repository\Contracts\RepositoryInterface;
+use Swoolecan\Foundation\Criteria\TraitCriteria;
 
 abstract class AbstractCriteria implements CriteriaInterface
 {
-    protected $field;
-    protected $value;
+    use TraitCriteria;
 
     public function __construct($params = [])
     {
@@ -26,42 +26,7 @@ abstract class AbstractCriteria implements CriteriaInterface
         return $this->_pointApply($query, $repository);
     }
 
-    public function _pointApply($query, $repository)
-    {
-        return $query;
-    }
-
-    public function getField()
-    {
-        return isset($this->params['field']) ? $this->params['field'] : false;
-    }
-
-    /**
-     * @param $model
-     * @param RepositoryInterface $repository
-     * @return mixed
-     */
-    public function _applyBase($query, $repository)
-    {
-        $field = $this->getField();
-        if (empty($field)) {
-            return $query;
-        }
-        $value = $this->params['value'];
-        $operator = $this->params['operator'];
-        $query->where($field, $operator, $value);
-
-        return $query;
-    }
-
-    /*public function apply($model, RepositoryInterface $repository)
-    {
-        $model = $model->where('user_id', '=', current_auth_user()->user_id);
-
-        return $model;
-    }
-
-    public function __construct(SocialiteAuthRequest $request)
+    /*public function __construct(SocialiteAuthRequest $request)
     {
         $this->request = $request;
     }
@@ -80,18 +45,11 @@ abstract class AbstractCriteria implements CriteriaInterface
         }
 
         return $model;
-        $model = $model
-            ->where('provider', '=', $this->request->provider)
-            ->where('provider_user_id', '=', $this->request->provider_user_id);
-
-        return $model;
-
-        if ($name = $this->request->get('name')) {
-            $query->where('name', '=', $name);
-        }
 
         if ($email = $this->request->get('email')) {
             $query->where('email', 'like', "%$email%");
         }
+
+        $model = $model->where('user_id', '=', current_auth_user()->user_id);
     }*/
 }
