@@ -23,7 +23,7 @@
         "mews/captcha": "^3.2",
         "nunomaduro/collision": "5.0.2",
         "overtrue/laravel-lang": "~3.0",
-        "overtrue/laravel-socialite": "^3.2",
+        "overtrue/laravel-socialite": "~3.0",
         "predis/predis": "1.1.6",
         "prettus/l5-repository": "^2.7",
         "prettus/laravel-validation": "^1.3",
