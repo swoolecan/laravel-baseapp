@@ -1,7 +1,6 @@
 <?php
 
 require __DIR__ . '/response.php';
-echo 'dddddddddddddddddddd';exit();
 
 if (! function_exists('config_path')) {
     /**
