@@ -24,58 +24,14 @@ class ResourceContainer
 
     public function __construct()
     {
-        $config = app('config');
-        $this->config = $config;
+        $this->config = app('config');
         $this->request = request();
-        $this->appCode = $appCode = $this->config->get('app.app_code');
-        $resources = $this->getResourceDatas('resources');
+        $resources = $this->getBaseCache('resource');
         if (empty($resources)) {
             $this->throwException(500, '应用资源不存在');
         }
         $this->resources = $resources;
     }
-
-    protected function getResourceDatas($key = 'resources')
-    {
-        $datas = $this->config->get('resource');
-        return $datas;
-    }
-
-    public function getModel($code, $module = '')
-    {
-        return self::getPointObject('model', $code, $module);
-    }
-
-    public function getRepository($code, $module = '')
-    {
-        return self::getPointObject('repository', $code, $module);
-    }
-
-    public function getPointObject($type, $code, $module, $returnObj = true)
-    {
-        $types = [
-            'repository' => 'Repositories',
-        ];
-        $typeCode = $types[$type] ?? ucfirst($type) . 's';
-        $class = "App\\{$typeCode}\\";
-        $class .= !empty($module) ? ucfirst($module) . "\\" : '';
-        $class .= ucfirst($code);
-        $class .= in_array($type, ['model']) ? '' : ucfirst($type);
-        return new $class();
-    }
-
-    /*public function getPointModel($code, $module = '')
-    {
-        $code = ucfirst($code);
-        if (!empty($module)) {
-            $module = ucfirst($module);
-            $module = "\\{$module}";
-        }
-        $class = "\App\Models{$module}\\{$code}";
-        $model = new $class();
-        //$model->adminUser = $this->user;
-        return $model;
-    }*/
 
     public function getRouteParam($param)
     {
@@ -111,7 +67,7 @@ class ResourceContainer
 
     public function initRouteDatas()
     {
-        $routes = $this->config->get('routes');
+        $routes = $this->getBaseCache('route');
         return $routes;
     }
 
@@ -127,11 +83,42 @@ class ResourceContainer
             return Str::singular($string);
         case 'studly':
             return Str::studly($string);
+        case 'camel':
+            return Str::camel($string);
+        case 'pluralStudly':
+            return Str::pluralStudly($string);
         }
     }
 
     public function getObjectByClass($class)
     {
         return app()->make($class);
+    }
+
+    public function getBaseCache($type)
+    {
+        $key = $this->_baseCacheKeys($type);
+        $redis = app("redis.connection");
+        $datas = $redis->get($key);
+        $datas = unserialize($datas);
+        $datas = $datas ?: $this->config->get($type);
+        return $datas;
+    }
+
+    public function setBaseCache($type, $datas)
+    {
+        $key = $this->_baseCacheKeys($type);
+        $redis = $this->getObject('service', 'passport-redis');
+        $redis->set($key, $datas);
+        return $datas;
+    }
+
+    protected function _baseCacheKeys($key = null)
+    {
+        $datas = [
+            'route' => 'c:common-route:routes',
+            'resource' => 'c:common-resource:resources',
+        ];
+        return is_null($key) ? $datas : $datas[$key];
     }
 }

@@ -6,6 +6,8 @@ use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
 use Prettus\Repository\Presenter\FractalPresenter;
 use Framework\Baseapp\Transformers\AbstractTransformer;
+use Framework\Baseapp\Helpers\ResourceContainer;
+use Swoolecan\Foundation\Helpers\TraitResourceManager;
 
 /**
  * Class Presenter
@@ -16,11 +18,19 @@ use Framework\Baseapp\Transformers\AbstractTransformer;
  */
 abstract class AbstractPresenter extends FractalPresenter
 {
+    use TraitResourceManager;
     protected $meta = [];
     /**
      * @var string
      */
     protected $transformer = null;
+
+    public function __construct()
+    {
+        $this->resource = app(ResourceContainer::class);
+        $this->config = config();
+        parent::__construct();
+    }
 
     /**
      * @param string $transformer
