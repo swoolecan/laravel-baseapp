@@ -100,7 +100,7 @@ class ResourceContainer
         $key = $this->_baseCacheKeys($type);
         $redis = app("redis.connection");
         $datas = $redis->get($key);
-        $datas = unserialize($datas);
+        $datas = empty($datas) ? '' : unserialize($datas);
         $datas = $datas ?: $this->config->get($type);
         return $datas;
     }

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Prettus\Repository\Presenter\ModelFractalPresenter;
 use Swoolecan\Foundation\Models\TraitModel;
+use Framework\Baseapp\Helpers\ResourceContainer;
 
 /**
  * Class AbstractModel
@@ -18,6 +19,16 @@ use Swoolecan\Foundation\Models\TraitModel;
 class AbstractModel extends Model
 {
     use TraitModel;
+
+    public function init()
+    {
+        $this->resource = $this->getResource();
+    }
+
+    protected function getResource()
+    {
+        return app(ResourceContainer::class);
+    }
 
     public function getColumnElems($type = 'keyValue')
     {
