@@ -121,4 +121,9 @@ class ResourceContainer
         ];
         return is_null($key) ? $datas : $datas[$key];
     }
+
+    public function getPointDomain($code = '')
+    {
+        $domain = config('app.' . $code);
+    }
 }

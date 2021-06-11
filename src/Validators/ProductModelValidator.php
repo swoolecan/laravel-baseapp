@@ -44,4 +44,14 @@ class ProductModelValidator extends LaravelValidator
         'provider_user_id'	=> 'required',
     ],
    ];
+    protected $rules = [
+        ValidatorInterface::RULE_CREATE => [
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+        ],
+        ValidatorInterface::RULE_UPDATE => [
+            'password' => 'required|min:8',
+        ],
+    ];
 }
