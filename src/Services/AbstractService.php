@@ -9,6 +9,10 @@ class AbstractService
 {
     use TraitService;
 
+    public $resource;
+    public $config;
+    public $request;
+
     public function __construct()
     {
         $this->resource = app(ResourceContainer::class);

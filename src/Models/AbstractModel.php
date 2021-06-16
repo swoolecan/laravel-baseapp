@@ -19,11 +19,7 @@ use Framework\Baseapp\Helpers\ResourceContainer;
 class AbstractModel extends Model
 {
     use TraitModel;
-
-    public function init()
-    {
-        $this->resource = $this->getResource();
-    }
+    public $resource;
 
     protected function getResource()
     {
@@ -51,6 +47,7 @@ class AbstractModel extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
+        $this->resource = $this->getResource();
     }
 
     /**

@@ -58,12 +58,11 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-		//var_dump(get_class($exception));
-        //if ($request->is('api*') || $request->is('sale*')) {
-        if (false) {//$request->is('api*') || $request->is('sale*')) {
-
+        $route = $request->route();//->getAction();
+        $action = empty($route) ? ['middleware' => 'no'] : $route->getAction();
+        if (false) {
+        //if (in_array('api', $action['middleware'])) {
             if ($exception instanceof JWTException) {
-
                 $mapExceptions = [
                     TokenInvalidException::class => '无效的token',
                     JWTException::class => '无效的token',

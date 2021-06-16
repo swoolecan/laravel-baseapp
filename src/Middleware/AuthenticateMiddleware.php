@@ -4,9 +4,9 @@ namespace Framework\Baseapp\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 
-use App\Models\User;
+use ModelPassport\Models\User;
 
-class Authenticate extends Middleware
+class AuthenticateMiddleware extends Middleware
 {
     /**
      * Get the path the user should be redirected to when they are not authenticated.
@@ -14,12 +14,12 @@ class Authenticate extends Middleware
      * @param  \Illuminate\Http\Request  $request
      * @return string|null
      */
-    /*protected function redirectTo($request)
+    protected function redirectTo($request)
     {
-        if (! $request->expectsJson()) {
+        /*if (! $request->expectsJson()) {
             return route('login');
-        }
-    }*/
+        }*/
+    }
 
     /**
      * Determine if the user is logged in to any of the given guards.
