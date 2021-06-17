@@ -17,6 +17,12 @@ class AbstractRequest extends FormRequest
 {
     use TraitRequest;
 
+    public function __construct($params = [])
+    {
+        $this->_scene = $params['scene'] ?? '';
+        parent::__construct();
+    }
+
     /**
      * The route to redirect to if validation fails.
      *

@@ -90,9 +90,9 @@ class ResourceContainer
         }
     }
 
-    public function getObjectByClass($class)
+    public function getObjectByClass($class, $params)
     {
-        return app()->make($class);
+        return app()->make($class, $params);
     }
 
     public function getBaseCache($type)
