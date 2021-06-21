@@ -23,4 +23,37 @@ class AbstractCollection extends ResourceCollection
         $this->simpleResult = $simpleResult;
         parent::__construct($resource);
     }
+
+    /**
+     * Map the given collection resource into its individual resources.
+     *
+     * @param mixed $resource
+     * @return mixed
+     */
+    protected function collectResource($resource)
+    {
+        if ($resource instanceof MissingValue) {
+            return $resource;
+        }
+
+        if (is_array($resource)) {
+            $resource = new Collection($resource);
+        }
+
+        $collects = $this->collects();
+
+
+        $this->collection = $collects && ! $resource->first() instanceof $collects
+            ? $resource->mapInto($collects)
+            : $resource->toBase();
+        foreach ($this->collection as $collection) {
+            $collection->setScene($this->getScene());
+            $collection->setRepository($this->repository);
+            $collection->setSimpleResult($this->simpleResult);
+        }
+
+        return $resource instanceof AbstractPaginator
+            ? $resource->setCollection($this->collection)
+            : $this->collection;
+    }
 }
