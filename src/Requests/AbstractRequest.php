@@ -20,6 +20,7 @@ class AbstractRequest extends FormRequest
     public function __construct($params = [])
     {
         $this->_scene = $params['scene'] ?? '';
+        $this->_repository = $params['repository'] ?? null;
         parent::__construct();
     }
 
