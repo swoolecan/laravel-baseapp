@@ -50,12 +50,6 @@ abstract class AbstractRepository extends BaseRepository
 
     }
 
-    public function getResourceClass($code = null)
-    {
-        return $this->resource->getClassName('resource', $code ? $code : get_called_class());
-    }
-
-
     /*public function presenter()
     {
         return PostPresenter::class;

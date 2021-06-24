@@ -120,27 +120,16 @@ function responseJsonAsServerError($message = 'server error', $data = [], $extFi
  */
 function responseJson($code = 200, $message = 'success', $data = [], $extFields = [])
 {
-	$data = empty($data) ? (object)[] : $data;
+    $data = empty($data) ? (object)[] : $data;
     $responseData = compact('code', 'message', 'data');
     $responseData = array_merge($responseData, $extFields);
-
-    return response()->json($responseData);
-}
-
-/**
- * 正常状态使用（按HTTP状态码返回数据)
- *
- * @param int    $code
- * @param string $message
- * @param array  $data
- * @param array  $extFields
- * @return \Illuminate\Http\JsonResponse
- */
-function responseJsonHttp($code = 200, $message = 'success', $data = [], $extFields = [])
-{
-	$data = empty($data) ? (object)[] : $data;
-    $responseData = compact('code', 'message', 'data');
-    $responseData = array_merge($responseData, $extFields);
+    $responseFormat = config('app.responseFormat');
+    if (!empty($responseFormat)) {
+        foreach ($responseFormat as $key => $replaceKey) {
+            $responseData[$replaceKey] = $responseData[$key];
+            unset($responseData[$key]);
+        }
+    }
 
     return response()->json($responseData);
 }

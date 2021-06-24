@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
  *
  * @package App\Http\Middleware
  */
-class ApiCaseConverterMiddle
+class ApiCaseConverterMiddleware
 {
     /**
      * Handle an incoming request.
