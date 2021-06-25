@@ -108,7 +108,6 @@ function responseJsonAsServerError($message = 'server error', $data = [], $extFi
     return responseJson(500, $message, $data, $extFields);
 }
 
-
 /**
  * 正常状态使用
  *
@@ -121,15 +120,22 @@ function responseJsonAsServerError($message = 'server error', $data = [], $extFi
 function responseJson($code = 200, $message = 'success', $data = [], $extFields = [])
 {
     $data = empty($data) ? (object)[] : $data;
-    $responseData = compact('code', 'message', 'data');
-    $responseData = array_merge($responseData, $extFields);
-    $responseFormat = config('app.responseFormat');
-    if (!empty($responseFormat)) {
-        foreach ($responseFormat as $key => $replaceKey) {
-            $responseData[$replaceKey] = $responseData[$key];
-            unset($responseData[$key]);
-        }
+    $responseCodeFormat = config('app.responseCodeFormat');
+    if (!empty($responseCodeFormat)) {
+        $code = $responseCodeFormat[$code] ?? $responseCodeFormat['default'];
     }
+
+    //$responseData = compact('code', 'message', 'data');
+    $responseFormat = config('app.responseFormat');
+    $codeKey = $responseFormat['code'] ?? 'code';
+    $messageKey = $responseFormat['message'] ?? 'message';
+    $dataKey = $responseFormat['data'] ?? 'data';
+    $responseData = [
+        $codeKey => intval($code),
+        $messageKey => $message,
+        $dataKey => $data,
+    ];
+    $responseData = array_merge($responseData, $extFields);
 
     return response()->json($responseData);
 }
