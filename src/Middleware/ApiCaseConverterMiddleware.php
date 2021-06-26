@@ -77,6 +77,7 @@ class ApiCaseConverterMiddleware
         $json = json_decode($content, true);
         if (is_array($json)) {
             $json = $this->recursiveConvertNameCaseToCamel($json);
+            $json['data'] = empty($json['data']) ? (object)[] : $json['data'];
             $response->setContent(json_encode($json));
         }
     }

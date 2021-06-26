@@ -121,6 +121,7 @@ function responseJson($code = 200, $message = 'success', $data = [], $extFields 
 {
     $data = empty($data) ? (object)[] : $data;
     $responseCodeFormat = config('app.responseCodeFormat');
+    //print_r($responseCodeFormat);exit();
     if (!empty($responseCodeFormat)) {
         $code = $responseCodeFormat[$code] ?? $responseCodeFormat['default'];
     }

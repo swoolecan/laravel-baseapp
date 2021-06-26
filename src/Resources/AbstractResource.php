@@ -9,4 +9,9 @@ use Swoolecan\Foundation\Resources\TraitResource;
 class AbstractResource extends JsonResource
 {
     use TraitResource;
+
+    public function toArray($request = null): array
+    {
+        return $this->_toArray($request);
+    }
 }
