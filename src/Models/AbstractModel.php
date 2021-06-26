@@ -20,6 +20,7 @@ class AbstractModel extends Model
 {
     use TraitModel;
     public $resource;
+    public $config;
 
     protected function getResource()
     {
@@ -48,6 +49,8 @@ class AbstractModel extends Model
     {
         parent::__construct($attributes);
         $this->resource = $this->getResource();
+        $this->config = config();
+        //var_dump(get_class($this->config));
     }
 
     /**

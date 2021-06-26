@@ -21,7 +21,7 @@ abstract class AbstractCriteria implements CriteriaInterface
      * @param array $params
      * @return mixed
      */
-    public abstract function apply($query, RepositoryInterface $repository)
+    public function apply($query, RepositoryInterface $repository)
     {
         return $this->_pointApply($query, $repository);
     }

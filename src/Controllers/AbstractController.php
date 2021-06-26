@@ -21,7 +21,7 @@ abstract class AbstractController extends BaseController
         $this->request = request();
     }
 
-    public function success($message = 'OK', $datas)
+    public function success($datas = [], $message = 'OK')
     {
         return \responseJson(200, $message, $datas);
     }
