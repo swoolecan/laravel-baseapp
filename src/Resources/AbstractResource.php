@@ -9,6 +9,7 @@ use Swoolecan\Foundation\Resources\TraitResource;
 class AbstractResource extends JsonResource
 {
     use TraitResource;
+    public $with = ['code' => 200, 'message' => 'OK'];
 
     public function toArray($request = null): array
     {

@@ -47,7 +47,6 @@ class AbstractModel extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->resource = $this->getResource();
         $this->config = config();
         //var_dump(get_class($this->config));
     }
