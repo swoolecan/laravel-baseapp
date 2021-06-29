@@ -19,7 +19,6 @@ use Framework\Baseapp\Helpers\ResourceContainer;
 class AbstractModel extends Model
 {
     use TraitModel;
-    public $resource;
     public $config;
 
     protected function getResource()
