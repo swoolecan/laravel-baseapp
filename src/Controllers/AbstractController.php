@@ -26,4 +26,9 @@ abstract class AbstractController extends BaseController
         $message = $message ?: 'OK';
         return \responseJson(200, $message, $datas);
     }
+
+    public function error($code, $message, $datas = [])
+    {
+        return \responseJson($code, $message, $datas);
+    }
 }
