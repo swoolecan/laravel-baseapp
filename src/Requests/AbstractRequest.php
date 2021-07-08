@@ -24,6 +24,11 @@ class AbstractRequest extends FormRequest
         parent::__construct();
     }
 
+    public function getRule()
+    {
+        return new Rule();
+    }
+
     /**
      * The route to redirect to if validation fails.
      *
