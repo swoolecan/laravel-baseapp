@@ -10,6 +10,7 @@ use Illuminate\Auth\AuthenticationException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Framework\Baseapp\Exceptions\BusinessException;
 
 class Handler extends ExceptionHandler
 {
@@ -77,16 +78,14 @@ class Handler extends ExceptionHandler
                 $msg = '你没有权限';
                 $msg .= get_class($exception);
                 return responseJsonAsUnAuthorized($msg);
-            }
-            // 拦截表单验证错误抛出的异常
-            elseif ($exception instanceof ValidationException) {
-
+            } elseif ($exception instanceof BusinessException) {
+                return responseJson($exception->getCode(), $exception->getMessage());
+            } elseif ($exception instanceof ValidationException) { // 拦截表单验证错误抛出的异常
                 return responseJsonAsBadRequest($exception->validator->errors()->first());
             }
 
             return responseJsonAsServerError($exception->getMessage());
         }
-
 
         /*if ($request->is('api/e-commerce*') && $exception instanceof ValidationException) {
             return  response()->json(['status'=>1,"msg"=>$exception->validator->errors()->first()]);

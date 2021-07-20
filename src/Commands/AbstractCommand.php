@@ -19,4 +19,9 @@ class AbstractCommand extends Command
     {
         return config();
     }
+
+    public function getPointArgument($param)
+    {
+        return $this->argument($param);
+    }
 }
