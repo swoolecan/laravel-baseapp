@@ -48,6 +48,7 @@ abstract class AbstractRepository extends BaseRepository
         //$this->criteria = $collection;
         $this->resetScope();
 
+        return $this->model;
     }
 
     /*public function presenter()

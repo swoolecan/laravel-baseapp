@@ -90,7 +90,7 @@ class ResourceContainer
         }
     }
 
-    public function getObjectByClass($class, $params)
+    public function getObjectByClass($class, $params = [])
     {
         return app()->make($class, $params);
     }
