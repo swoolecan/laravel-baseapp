@@ -54,4 +54,9 @@ class PassportRpcServer extends AbstractRpcServer
     {
         return $this->getResource()->getObject('repository', 'passport-attachmentInfo')->getDatas($params);
     }
+
+    public function getAttachmentInfo($params, $onlyUrl)
+    {
+        return $this->getResource()->getObject('repository', 'passport-attachmentInfo')->getData($params, $onlyUrl);
+    }
 }

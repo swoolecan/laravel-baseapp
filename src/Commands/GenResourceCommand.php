@@ -24,4 +24,50 @@ class GenResourceCommand extends AbstractCommand
         file_put_contents('/tmp/text.txt', date('Y-m-d H:i:s') . '--'. $type. '==' . $options . 'ssssssssss', FILE_APPEND);
         echo 'sssssssssss';exit();
     }
+
+    public function createResources($resources, $config)
+    {
+        foreach ($resources as $resourceBase => $elems) {
+            $this->createResource($resourceBase, $elems, $config);
+        }
+    }
+
+    protected function createResource($resourceBase, $elems, $config)
+    {
+        list($app, $resource) = explode('-', $resourceBase);
+        foreach ($elems as $type => $elem) {
+            if (in_array($app, ['merchant', 'third'])) {
+                continue;
+            }
+            if (strpos($elem, 'Framework') === 0) {
+                continue;
+            }
+            $basefile = substr($elem, strpos($elem, '\\') + 1);
+            $basefile = str_replace('\\', '/', $basefile) . '.php';
+            $file = $config['moduleBase'] . '/' . $app . '/app/' . $basefile;
+            if (file_exists($file)) {
+                continue;
+            }
+
+            $namespace = substr($elem, 0, strrpos($elem, '\\'));
+            $class = substr($elem, strrpos($elem, '\\') + 1);
+            $this->_createClass($file, $namespace, $class, $type, $resource, $config);
+        }
+    }
+
+    protected function _createClass($file, $namespace, $class, $type, $resource, $config)
+    {
+        $stubFile = $config['stubPath'] . '/' . $type . '.stub';
+        $content = file_get_contents($stubFile);
+        $content = str_replace(['%NAMESPACE%', '%CLASS%', '%TABLE%'], [$namespace, $class, $resource], $content);
+        $path = dirname($file);
+        if (!is_dir($path)) {
+            if (!is_dir(dirname($path))) {
+                echo $path;exit();
+                mkdir(dirname($path));
+            }
+            mkdir($path);
+        }
+        file_put_contents($file, $content);
+    }
 }

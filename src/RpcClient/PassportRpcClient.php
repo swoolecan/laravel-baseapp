@@ -45,4 +45,9 @@ class PassportRpcClient extends AbstractRpcClient
     {
         return $this->getServer()->getAttachmentInfos($params);
     }
+
+    public function getAttachmentInfo($params, $onlyUrl)
+    {
+        return $this->getServer()->getAttachmentInfo($params, $onlyUrl);
+    }
 }
