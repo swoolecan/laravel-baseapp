@@ -27,6 +27,7 @@ class GenResourceCommand extends AbstractCommand
 
     public function createResources($resources, $config)
     {
+        //print_r($resources);
         foreach ($resources as $resourceBase => $elems) {
             $this->createResource($resourceBase, $elems, $config);
         }
@@ -48,6 +49,8 @@ class GenResourceCommand extends AbstractCommand
             if (file_exists($file)) {
                 continue;
             }
+            echo $file . "\n";
+            //continue;
 
             $namespace = substr($elem, 0, strrpos($elem, '\\'));
             $class = substr($elem, strrpos($elem, '\\') + 1);
@@ -59,7 +62,8 @@ class GenResourceCommand extends AbstractCommand
     {
         $stubFile = $config['stubPath'] . '/' . $type . '.stub';
         $content = file_get_contents($stubFile);
-        $content = str_replace(['%NAMESPACE%', '%CLASS%', '%TABLE%'], [$namespace, $class, $resource], $content);
+        $table = $this->getResource()->strOperation($resource, 'snake');
+        $content = str_replace(['%NAMESPACE%', '%CLASS%', '%TABLE%'], [$namespace, $class, $table], $content);
         $path = dirname($file);
         if (!is_dir($path)) {
             if (!is_dir(dirname($path))) {

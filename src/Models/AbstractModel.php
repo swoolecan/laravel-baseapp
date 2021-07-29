@@ -21,7 +21,7 @@ class AbstractModel extends Model
     use TraitModel;
     public $config;
 
-    protected function getResource()
+    public function getResource()
     {
         return app(ResourceContainer::class);
     }

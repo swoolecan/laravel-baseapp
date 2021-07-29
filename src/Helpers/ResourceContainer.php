@@ -7,7 +7,6 @@ namespace Framework\Baseapp\Helpers;
 use Illuminate\Support\Str;
 use Framework\Baseapp\Exceptions\BusinessException;
 use Swoolecan\Foundation\Helpers\TraitResourceContainer;
-use Framework\Baseapp\Services\RedisService;
 
 //use Hyperf\Cache\Annotation\Cacheable;
 
@@ -67,7 +66,7 @@ class ResourceContainer
 
     public function initRouteDatas()
     {
-        $routes = $this->getBaseCache('route');
+        $routes = $this->getBaseCache('permission');
         return $routes;
     }
 
@@ -85,6 +84,8 @@ class ResourceContainer
             return Str::studly($string);
         case 'camel':
             return Str::camel($string);
+        case 'snake':
+            return Str::snake($string);
         case 'pluralStudly':
             return Str::pluralStudly($string);
         }
@@ -97,29 +98,16 @@ class ResourceContainer
 
     public function getBaseCache($type)
     {
-        $key = $this->_baseCacheKeys($type);
+        $keys = [
+            'permission' => 'passport:permission:common',
+            'resource' => 'passport:resource:common',
+        ];
+        $key = $keys[$type];
         $redis = app("redis.connection");
         $datas = $redis->get($key);
-        $datas = empty($datas) ? '' : unserialize($datas);
+        $datas = empty($datas) ? '' : json_decode($datas, true);
         $datas = $datas ?: $this->config->get($type);
         return $datas;
-    }
-
-    public function setBaseCache($type, $datas)
-    {
-        $key = $this->_baseCacheKeys($type);
-        $redis = $this->getObject('service', 'passport-redis');
-        $redis->set($key, $datas);
-        return $datas;
-    }
-
-    protected function _baseCacheKeys($key = null)
-    {
-        $datas = [
-            'route' => 'c:common-route:routes',
-            'resource' => 'c:common-resource:resources',
-        ];
-        return is_null($key) ? $datas : $datas[$key];
     }
 
     public function getPointDomain($code = '')
