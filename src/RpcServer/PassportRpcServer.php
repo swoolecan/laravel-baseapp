@@ -20,7 +20,7 @@ class PassportRpcServer extends AbstractRpcServer
 
     public function getUserById($id): array
     {
-        $userPermission = make(UserPermissionService::class);
+        $userPermission = $this->getResource()->getObject('service', 'passport-userPermission');
         $user = $userPermission->getUserById($id);
         if (empty($user)) {
             return ['code' => 400, 'message' => 'Token获取用户失败'];

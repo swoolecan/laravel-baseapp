@@ -38,6 +38,11 @@ class ResourceContainer
         return $param;
     }
 
+    public function getCurrentUser()
+    {
+        return $this->request->get('current_user');
+    }
+
     public function setRoute($route, $domain, $domainRoutes)
     {
         $domainRoute = $domainRoutes[$route] ?? [];
