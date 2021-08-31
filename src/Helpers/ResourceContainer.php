@@ -90,9 +90,12 @@ class ResourceContainer
         case 'camel':
             return Str::camel($string);
         case 'snake':
-            return Str::snake($string);
+            $params = empty($params) ? '_' : $params;
+            return Str::snake($string, $params);
         case 'pluralStudly':
             return Str::pluralStudly($string);
+        case 'plural':
+            return Str::plural($string);
         }
     }
 
