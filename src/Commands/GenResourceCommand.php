@@ -45,6 +45,7 @@ class GenResourceCommand extends AbstractCommand
         ];
         $resourceSql = "INSERT INTO `wp_auth_resource` (`app`, `code`, `name`, `controller`, `request`, `model`, `service`, `repository`, `resource`, `collection`) VALUES \n";
         $permissionSql = "INSERT INTO `wp_auth_permission` ( `code`, `resource_code`, `parent_code`, `name`, `app`, `controller`, `action`, `method`, `orderlist`, `display`, `icon`, `extparam`) VALUES \n";
+        $ignores = ['passport' => ['migrations'], 'infocms' => ['attachment']];
         foreach ($validDatabases as $database) {
             $info = $databases[$database];
             $tables = $this->getTableDatas($info['database'], $database);
@@ -53,9 +54,12 @@ class GenResourceCommand extends AbstractCommand
                 $table = str_replace('_', '-', $table);
                 $app = $correspondApps[$database] ?? $database;
                 $table = isset($correspondTables[$app]) && isset($correspondTables[$app][$table]) ? $correspondTables[$app][$table] : $table;
+                if (isset($ignores[$app]) && in_array($table, $ignores[$app])) {
+                    continue;
+                }
                 //$datas = $this->_createFront($app, $table, $config);
-                $resourceSql .= $this->_checkResource($table, $app, $tData['name']);
-                $permissionSql .= $this->_checkPermission($table, $app, $tData['name']);
+                $resourceSql .= $this->_checkResource($table, $app, $tData['comment']);
+                $permissionSql .= $this->_checkPermission($table, $app, $tData['comment']);
             }
         }
         echo $resourceSql;

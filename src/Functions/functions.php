@@ -2,6 +2,48 @@
 
 require __DIR__ . '/response.php';
 
+if (! function_exists('initDatabaseData')) {
+    function initDatabaseData($elems)
+    {
+        $datas = [];
+        $default = [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => env('DB_PREFIX', ''),
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ];
+        foreach ($elems as $elem) {
+            $datas[$elem] = $default;
+            if ($elem == 'mysql') {
+                continue;
+            }
+            foreach (array_keys($default) as $key) {
+                if ($key == 'options') {
+                    continue;
+                }
+                $value = env('DB_' . strtoupper($key) . '_' . strtoupper($elem));
+                if (!is_null($value)) {
+                    $datas[$elem][$key] = $value;
+                }
+            }
+        }
+        return $datas;
+    }
+}
+
 if (! function_exists('config_path')) {
     /**
      * Get the configuration path.
