@@ -63,7 +63,7 @@ class Handler extends ExceptionHandler
         $route = $request->route();//->getAction();
         $action = empty($route) ? ['middleware' => ['no']] : $route->getAction();
         //if (false) {
-        if (in_array('api', $action['middleware'])) {
+        if (isset($action['middleware']) && in_array('api', $action['middleware'])) {
             if ($exception instanceof JWTException) {
                 $mapExceptions = [
                     TokenInvalidException::class => '无效的token',

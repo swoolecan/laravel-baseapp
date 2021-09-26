@@ -38,13 +38,13 @@ class GenResourceCommand extends AbstractCommand
     public function checkResource($databases, $config)
     {
         $validDatabases = ['mysql', 'infocms', 'shop', 'culture', 'paytrade', 'third', 'bigdata', 'bench'];
-        //$validDatabases = ['bench'];
+        //$validDatabases = ['bigdata'];
         $correspondApps = ['mysql' => 'passport'];
         $correspondTables = [
             'passport' => ['auth-manager' => 'manager', 'auth-managerlog' => 'managerlog', 'auth-permission' => 'permission', 'auth-resource' => 'resource', 'auth-role' => 'role', 'auth-role-manager' => 'role-manager', 'auth-role-permission' => 'role-permission'],
         ];
-        $resourceSql = "INSERT INTO `wp_auth_resource` (`app`, `code`, `name`, `controller`, `request`, `model`, `service`, `repository`, `resource`, `collection`) VALUES \n";
-        $permissionSql = "INSERT INTO `wp_auth_permission` ( `code`, `resource_code`, `parent_code`, `name`, `app`, `controller`, `action`, `method`, `orderlist`, `display`, `icon`, `extparam`) VALUES \n";
+        $resourceSql = "INSERT INTO `wp_auth_resource` (`app`, `code`, `name`, `controller`, `request`, `model`, `service`, `repository`, `resource`, `collection`, `created_at`, `updated_at`) VALUES \n";
+        $permissionSql = "INSERT INTO `wp_auth_permission` ( `code`, `resource_code`, `parent_code`, `name`, `app`, `controller`, `action`, `method`, `orderlist`, `display`, `icon`, `extparam`, `created_at`, `updated_at`) VALUES \n";
         $ignores = ['passport' => ['migrations'], 'infocms' => ['attachment']];
         foreach ($validDatabases as $database) {
             $info = $databases[$database];
@@ -57,9 +57,13 @@ class GenResourceCommand extends AbstractCommand
                 if (isset($ignores[$app]) && in_array($table, $ignores[$app])) {
                     continue;
                 }
-                //$datas = $this->_createFront($app, $table, $config);
-                $resourceSql .= $this->_checkResource($table, $app, $tData['comment']);
-                $permissionSql .= $this->_checkPermission($table, $app, $tData['comment']);
+
+                $resourceInfo = \DB::SELECT("SELECT * FROM `wp_auth_resource` WHERE `code` = '{$table}' AND `app` = '{$app}'");
+                $resourceSql .= $this->_checkResource($resourceInfo, $table, $app, $tData['comment']);
+                if (isset($resourceInfo[0]) && $resourceInfo[0]->controller) {
+                    //$datas = $this->_createFront($app, $table, $config);
+                    $permissionSql .= $this->_checkPermission($table, $app, $tData['comment']);
+                }
             }
         }
         echo $resourceSql;
@@ -67,15 +71,14 @@ class GenResourceCommand extends AbstractCommand
         exit();
     }
 
-    protected function _checkResource($table, $app, $tableName)
+    protected function _checkResource($info, $table, $app, $tableName)
     {
-        $info = \DB::SELECT("SELECT * FROM `wp_auth_resource` WHERE `code` = '{$table}' AND `app` = '{$app}'");
         if ($info) {
             //echo 'exist - ' . $app . '==' . $table . "\n";
             return '';
         } else {
             //echo 'nooo - ' . $app . '==' . $table . "\n";
-            return "('{$app}', '{$table}', '{$tableName}', '1', '1', '1', '', '1', '1', '1'), \n";
+            return "('{$app}', '{$table}', '{$tableName}', '1', '1', '1', '', '1', '1', '1', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n";
         }
         //print_R($info);exit();
     }
@@ -87,11 +90,11 @@ class GenResourceCommand extends AbstractCommand
             //echo 'exist - pppppppp-' . $app . '==' . $table . "\n";
         } else {
             //echo 'nooo - pppppppp-' . $app . '==' . $table . "\n";
-            $sql = "('{$app}_{$table}_add', '{$table}', 'PARENTCODE', '添加{$tableName}', '{$app}', '{$table}', 'add', 'post', 0, 4, '', ''), \n";
-            $sql .= "('{$app}_{$table}_delete', '{$table}', 'PARENTCODE', '删除', '{$app}', '{$table}', 'delete', 'delete', 0, 5, '', ''), \n";
-            $sql .= "('{$app}_{$table}_update', '{$table}', 'PARENTCODE', '编辑', '{$app}', '{$table}', 'update', 'post', 0, 5, '', ''), \n";
-            //$sql .= "('{$app}_{$table}_view', '{$table}', 'PARENTCODE', '查看', '{$app}', '{$table}', 'view', 'get', 0, 5, '', ''), \n";
-            $sql .= "('{$app}_{$table}_listinfo', '{$table}', 'PARENTCODE', '{$tableName}', '{$app}', '{$table}', 'listinfo', 'get', 99, 3, '', ''), \n \n";
+            $sql = "('{$app}_{$table}_add', '{$table}', 'PARENTCODE', '添加{$tableName}', '{$app}', '{$table}', 'add', 'post', 0, 4, '', '', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n";
+            $sql .= "('{$app}_{$table}_delete', '{$table}', 'PARENTCODE', '删除', '{$app}', '{$table}', 'delete', 'delete', 0, 5, '', '', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n";
+            $sql .= "('{$app}_{$table}_update', '{$table}', 'PARENTCODE', '编辑', '{$app}', '{$table}', 'update', 'post', 0, 5, '', '', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n";
+            //$sql .= "('{$app}_{$table}_view', '{$table}', 'PARENTCODE', '查看', '{$app}', '{$table}', 'view', 'get', 0, 5, '', '', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n";
+            $sql .= "('{$app}_{$table}_listinfo', '{$table}', 'PARENTCODE', '{$tableName}', '{$app}', '{$table}', 'listinfo', 'get', 99, 3, '', '', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n \n";
             return $sql;
         }
         //print_R($info);exit();
@@ -113,7 +116,7 @@ class GenResourceCommand extends AbstractCommand
             $namespace = substr($elem, 0, strrpos($elem, '\\'));
             $class = substr($elem, strrpos($elem, '\\') + 1);
             if (file_exists($file)) {
-                $this->changeApp($app, $file, $namespace, $class, $type, $resource, $config);
+                //$this->changeApp($app, $file, $namespace, $class, $type, $resource, $config);
                 continue;
             }
             echo $file . "\n";
@@ -136,7 +139,9 @@ class GenResourceCommand extends AbstractCommand
         $stubFile = $config['stubPath'] . '/front.stub';
         $content = file_get_contents($stubFile);
         $content = str_replace(['{{APP}}', '{{RESOURCE}}', '{{URESOURCE}}', '{{RESOURCEMARK}}'], [$app, $plural, $class, $mark], $content);
-        file_put_contents($file, $content);
+        if (!file_exists($file)) {
+            file_put_contents($file, $content);
+        }
         
         echo $plural . '---' . $camel . '-==' . $class . '==' . $app . '==' . $resource . '-=-=' . $file . "===\n";
         $datas[$app]['file'][] = "import {$class} from '@/applications/{$app}/{$class}'\n";
@@ -181,5 +186,10 @@ class GenResourceCommand extends AbstractCommand
         }
         //SELECT REPLACE(`code`, 'infocms_', 'shop_'), REPLACE(`parent_code`, 'infocms_', 'shop_') FROM `wp_auth_permission` WHERE `resource_code` IN ('attribute', 'attribute-value', 'goods', 'goods-attribute', 'goods-sku', 'type', 'website-goods', 'website-sku') AND `app` = 'infocms' ;
         //UPDATE `wp_auth_permission` SET `code` = REPLACE(`code`, 'infocms_', 'shop_'), `parent_code` = REPLACE(`parent_code`, 'infocms_', 'shop_'), `app` = 'shop' WHERE `resource_code` IN ('attribute', 'attribute-value', 'goods', 'goods-attribute', 'goods-sku', 'type', 'website-goods', 'website-sku') AND `app` = 'infocms' ;
+    }
+
+    protected function currentTimestamp()
+    {
+        return date('Y-m-d H:i:s');
     }
 }

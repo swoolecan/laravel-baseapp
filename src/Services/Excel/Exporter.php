@@ -1,29 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sheldon
- * Date: 18-4-10
- * Time: 上午11:40.
- */
 
-namespace Yeelight\Services\Exporters;
+namespace Framework\Baseapp\Services\Excel;
 
 use Illuminate\Support\Facades\Input;
 use Yeelight\Repositories\Eloquent\BaseRepository as Repository;
 
-/**
- * Class Exporter
- *
- * @category Yeelight
- *
- * @package Yeelight\Services\Exporters
- *
- * @author Sheldon Lee <xdlee110@gmail.com>
- *
- * @license https://opensource.org/licenses/MIT MIT
- *
- * @link https://www.yeelight.com
- */
 class Exporter
 {
     /**

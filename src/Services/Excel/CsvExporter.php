@@ -1,35 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sheldon
- * Date: 18-4-10
- * Time: 上午11:30.
- */
 
-namespace Yeelight\Services\Exporters;
+namespace Framework\Baseapp\Services\Excel;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-/**
- * Class CsvExporter
- *
- * @category Yeelight
- *
- * @package Yeelight\Services\Exporters
- *
- * @author Sheldon Lee <xdlee110@gmail.com>
- *
- * @license https://opensource.org/licenses/MIT MIT
- *
- * @link https://www.yeelight.com
- */
 class CsvExporter extends AbstractExporter
 {
-    /**
-     * {@inheritdoc}
-     */
     public function export()
     {
         $filename = $this->getTable().'.csv';
@@ -65,11 +43,6 @@ class CsvExporter extends AbstractExporter
         exit;
     }
 
-    /**
-     * @param Collection $records
-     *
-     * @return array
-     */
     public function getHeaderRowFromRecords(Collection $records): array
     {
         $titles = collect(array_dot($records->first()->toArray()))->keys()->map(
@@ -83,11 +56,6 @@ class CsvExporter extends AbstractExporter
         return $titles->toArray();
     }
 
-    /**
-     * @param Model $record
-     *
-     * @return array
-     */
     public function getFormattedRecord(Model $record)
     {
         return array_dot($record->getAttributes());

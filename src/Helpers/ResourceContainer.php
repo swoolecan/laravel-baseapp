@@ -96,6 +96,10 @@ class ResourceContainer
             return Str::pluralStudly($string);
         case 'plural':
             return Str::plural($string);
+        case 'length':
+            return Str::length($string);
+        case 'substr':
+            return Str::substr($string, $params['start'], $params['length']);
         }
     }
 

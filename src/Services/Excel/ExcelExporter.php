@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sheldon
- * Date: 18-4-10
- * Time: 上午11:30.
- */
 
-namespace Yeelight\Services\Exporters;
+namespace Framework\Baseapp\Services\Excel;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -14,19 +8,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
-/**
- * Class ExcelExporter
- *
- * @category Yeelight
- *
- * @package Yeelight\Services\Exporters
- *
- * @author Sheldon Lee <xdlee110@gmail.com>
- *
- * @license https://opensource.org/licenses/MIT MIT
- *
- * @link https://www.yeelight.com
- */
 class ExcelExporter extends AbstractExporter
 {
     /**
@@ -61,11 +42,6 @@ class ExcelExporter extends AbstractExporter
         })->export('xlsx');
     }
 
-    /**
-     * @param Collection $records
-     *
-     * @return array
-     */
     public function getHeaderRowFromRecords(Collection $records): array
     {
         $titles = collect(array_dot($records->first()->toArray()))->keys()->map(
@@ -79,11 +55,6 @@ class ExcelExporter extends AbstractExporter
         return $titles->toArray();
     }
 
-    /**
-     * @param Model $record
-     *
-     * @return array
-     */
     public function getFormattedRecord(Model $record)
     {
         return array_dot($record->getAttributes());
