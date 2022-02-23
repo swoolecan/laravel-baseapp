@@ -38,7 +38,7 @@ class GenResourceCommand extends AbstractCommand
     public function checkResource($databases, $config)
     {
         $validDatabases = ['mysql', 'infocms', 'shop', 'culture', 'paytrade', 'third', 'bigdata', 'bench'];
-        //$validDatabases = ['bigdata'];
+        $validDatabases = ['culture'];
         $correspondApps = ['mysql' => 'passport'];
         $correspondTables = [
             'passport' => ['auth-manager' => 'manager', 'auth-managerlog' => 'managerlog', 'auth-permission' => 'permission', 'auth-resource' => 'resource', 'auth-role' => 'role', 'auth-role-manager' => 'role-manager', 'auth-role-permission' => 'role-permission'],
@@ -173,14 +173,19 @@ class GenResourceCommand extends AbstractCommand
 
     protected function changeApp($app, $file, $namespace, $class, $type, $resource, $config)
     {
-        return ;
-        $resources = ['attribute', 'attributeValue', 'goods', 'goodsAttribute', 'goodsSku', 'type', 'websiteGoods', 'websiteSku'];
-        if ($app == 'infocms' && in_array($resource, $resources)) {
+        //return ;
+        //$resources = ['attribute', 'attributeValue', 'goods', 'goodsAttribute', 'goodsSku', 'type', 'websiteGoods', 'websiteSku'];
+        $resources = ['cultureArticle', 'cultureCategory', 'rubbing', 'rubbingWord', 'rubbingDetail', 'calligrapher'];
+        echo $app . '==' . $resource . "\n";
+        if ($app == 'culture' && in_array($resource, $resources)) {
             echo $namespace . '==' . $class . '--' . $type . '==' . $resource . "\n";
-            $targetFile = str_replace($app, 'shop', $file);
+            //$targetFile = str_replace($app, 'shop', $file);
+            $targetFile = $file;//str_replace($app, 'culture', $file);
+            $file = str_replace('culture', 'infocms', $file);
             $content = file_get_contents($file);
-            $content = str_replace(['Infocms', 'infocms'], ['Shop', 'shop'], $content);
-            //file_put_contents($targetFile, $content);
+            //$content = str_replace(['Infocms', 'infocms'], ['Shop', 'shop'], $content);
+            $content = str_replace(['Infocms', 'infocms'], ['Culture', 'culture'], $content);
+            file_put_contents($targetFile, $content);
             unlink($file);
 
         }

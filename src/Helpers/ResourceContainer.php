@@ -51,7 +51,7 @@ class ResourceContainer
         $action = self::formatRouteAction($route, $domainRoute);
         $name = $domainRoute['name'] ?? $controller . '.' . $action;
         //echo '/' . $route . '====' . serialize($methods) . '--' . $controller . '==' . $action . '===' . $name . "\n <br />";
-        $controller = '\ModuleInfocms\Controllers\Web\\' . ucfirst($controller);
+        $controller = '\ModuleWebsite\Controllers\\' . ucfirst($controller);
         if ($methods === 'any') {
             \Route::any('/' . $route, ucfirst($controller) . 'Controller@' . $action)->name($name);
         } else {

@@ -2,11 +2,11 @@
 
 namespace Framework\Baseapp\Services;
 
-use Swoolecan\Foundation\Services\TraitWechatService;
+use Swoolecan\Foundation\Services\TraitWechatService as TraitWechatServiceBase;
 
-class WechatService extends AbstractService
+trait TraitWechatService
 {
-    use TraitWechatService;
+    use TraitWechatServiceBase;
 
     public function sendDingNotice($title, $content, $url)
     {

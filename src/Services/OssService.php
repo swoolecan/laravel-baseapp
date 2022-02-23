@@ -12,9 +12,11 @@ class OssService extends AbstractService
     use TraitOssService;
 
     protected $storage;
+    protected $currentDriver;
 
     public function setStorage($driver)
     {
+        $this->currentDriver = $driver;
         $this->storage = Storage::disk($driver);
         return $this->storage;
     }
@@ -22,6 +24,22 @@ class OssService extends AbstractService
     public function getStorage()
     {
         return empty($this->storage) ? $this->setStorage('ossfree') : $this->storage;
+    }
+
+    public function putFile($data, $file, $sourceFile, $type = 'remote')
+    {
+        $result = $this->dealPut($file, $sourceFile, $type);
+        if (empty($result)) {
+            \Log::info('put-file-error-' . $file . '==' . $sourceFile);
+            return false;
+        }
+
+        $data['system'] = $this->currentDriver;
+        $data['filepath'] = $file;
+        $attachmentModel = $this->resource->getObject('model', 'passport-attachment');
+        return $attachmentModel->create($data);
+        print_r($data);exit();
+        print_r($result);exit();
     }
 
     public function dealPut($file, $sourceFile, $type = 'local')
@@ -45,11 +63,17 @@ class OssService extends AbstractService
         return $this->getStorage()->url($file); // get the file url
     }
 
-    public function dealFile($oldFile, $newFile)
+    public function dealFile($type, $oldFile, $newFile)
     {
-        Storage::copy($oldFile, $newFile);
-        Storage::move($oldFile, $newFile);
-        Storage::rename($oldFile, $newFile);
+        $storage = $this->getStorage();
+        switch ($type) {
+        case 'copy':
+            return $storage->copy($oldFile, $newFile);
+        case 'move':
+            return $storage->move($oldFile, $newFile);
+        case 'rename':
+            return $storage->rename($oldFile, $newFile);
+        }
     }
 
     public function fileData($file)
@@ -84,8 +108,6 @@ class OssService extends AbstractService
         Storage::prepend('file.log', 'Prepended Text'); // Prepend to a file.
         Storage::append('file.log', 'Appended Text'); // Append to a file.
         
-        Storage::delete('file.jpg');
-        Storage::delete(['file1.jpg', 'file2.jpg']);
     }
 
     public function dealOldAttachment()
@@ -131,5 +153,60 @@ class OssService extends AbstractService
             $attachmentInfoModel->create($aInfo);
         }
         return true;
+    }
+
+    public function deleteRemote($datas)
+    {
+        $datas = (array) $datas;
+        $r = $this->storage->delete($datas);
+        return $r;
+        //Storage::delete('file.jpg');
+        //Storage::delete(['file1.jpg', 'file2.jpg']);
+
+    }
+
+    public function checkOssFiles($path = '')
+    {
+        $ossFiles = $this->dealFileLists($path);
+        $model = $this->getModelObj('attachment');
+        foreach ($ossFiles as $ossFile) {
+            $info = $model->where(['system' => 'ossfree', 'filepath' => $ossFile])->first();
+            if (empty($info)) {
+                echo $ossFile . '<br />';
+            }
+        }
+        exit();
+    }
+
+    public function checkOssRemote()
+    {
+        $model = $this->getModelObj('attachment');
+        $datas = $model->where(['system' => 'ossfree'])->get();
+
+        $i = 0;
+        foreach ($datas as $data) {
+            $file = $data['filepath'];
+            $exist = $this->getStorage()->exists($file); // determine if a given file exists on the storage(OSS)
+            if (empty($exist)) {
+                print_R($data->toArray());
+            }
+            $i++;
+        }
+        echo $i;
+        exit();
+    }
+
+    public function checkInfoDatas()
+    {
+        $model = $this->getModelObj('attachmentInfo');
+        $datas = $model->get();
+        foreach ($datas as $data) {
+            $attachment = $data->attachment;
+            if (empty($attachment->id)) {
+                print_r($data->toArray());
+            }
+        }
+        exit();
+
     }
 }
