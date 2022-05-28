@@ -124,6 +124,7 @@ class ResourceContainer
 
     public function getPointDomain($code = '')
     {
-        $domain = config('app.' . $code);
+        $domains = config('app.domains');
+        return $domains[$code] ?? '';
     }
 }

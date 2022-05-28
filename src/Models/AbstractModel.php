@@ -120,14 +120,14 @@ class AbstractModel extends Model
 
     public function preInfo($params)
     {
-        $params['orderBy'] = ['id' => 'desc'];
+        $params['orderBy'] = $params['orderBy'] ?? ['id' => 'desc'];
         $result = $this->_relateDatas(1, $params);
         return $result->isEmpty() ? [] : $result[0];
     }
 
     public function nextInfo($params)
     {
-        $params['orderBy'] = ['id' => 'asc'];
+        $params['orderBy'] = $params['orderBy'] ?? ['id' => 'asc'];
         $result = $this->_relateDatas(1, $params);
         return $result->isEmpty() ? [] : $result[0];
     }

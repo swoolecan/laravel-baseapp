@@ -140,3 +140,22 @@ function responseJson($code = 200, $message = 'success', $data = [], $extFields 
 
     return response()->json($responseData);
 }
+
+/**
+ * 正常状态使用
+ *
+ * @param int    $code
+ * @param string $message
+ * @param array  $data
+ * @param array  $extFields
+ * @return \Illuminate\Http\JsonResponse
+ */
+function ResponseJsonCustom($code = 200, $message = 'success', $data = [], $extFields = [])
+{
+    $data = empty($data) ? (object)[] : $data;
+    $data['status'] = $code == 200 ? 'success' : 'error';
+    $data['message'] = $message;
+    $responseData = array_merge($data, $extFields);
+
+    return response()->json($responseData);
+}
