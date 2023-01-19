@@ -117,6 +117,9 @@ class ResourceContainer
         $key = $keys[$type];
         $redis = app("redis.connection");
         $datas = $redis->get($key);
+        if (empty($datas)) {
+            \Log::debug('cache-empty-' . $key);
+        }
         $datas = empty($datas) ? '' : json_decode($datas, true);
         $datas = $datas ?: $this->config->get($type);
         return $datas;
@@ -124,7 +127,7 @@ class ResourceContainer
 
     public function getPointDomain($code = '')
     {
-        $domains = config('app.domains');
+        $domain = config('app.' . $code);
         return $domains[$code] ?? '';
     }
 }

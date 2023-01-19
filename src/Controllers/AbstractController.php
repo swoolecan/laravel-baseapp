@@ -21,12 +21,6 @@ abstract class AbstractController extends BaseController
         $this->request = request();
     }
 
-    public function successCustom($datas = [], $message = 'OK')
-    {
-        $message = $message ?: 'OK';
-        return \responseJsonCustom(200, $message, $datas);
-    }
-
     public function success($datas = [], $message = 'OK')
     {
         $message = $message ?: 'OK';

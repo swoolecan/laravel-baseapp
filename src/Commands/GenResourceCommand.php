@@ -159,7 +159,9 @@ class GenResourceCommand extends AbstractCommand
         $stubFile = $config['stubPath'] . '/' . $type . '.stub';
         $content = file_get_contents($stubFile);
         $table = $this->getResource()->strOperation($resource, 'snake');
-        $content = str_replace(['%NAMESPACE%', '%CLASS%', '%TABLE%'], [$namespace, $class, $table], $content);
+
+        $fieldStr = $type == 'repository' ? $this->getPointField('double6', $table, 'string') : '';
+        $content = str_replace(['%NAMESPACE%', '%CLASS%', '%TABLE%', '%FIELDSTR%'], [$namespace, $class, $table, $fieldStr], $content);
         $path = dirname($file);
         if (!is_dir($path)) {
             if (!is_dir(dirname($path))) {
@@ -169,6 +171,23 @@ class GenResourceCommand extends AbstractCommand
             mkdir($path);
         }
         file_put_contents($file, $content);
+    }
+
+    protected function getPointField($connection, $table, $returnType = 'array')
+    {
+        $db = \DB::connection($connection);
+        $config = $db->getConfig();
+        $str = '';
+        $where['TABLE_NAME'] = $config['prefix'] . $table;
+        $columes = $db->table(\DB::raw('information_schema.COLUMNS'))->where($where)->get();
+        $data = [];
+        foreach ($columes as $colume) {
+            $data[$colume->COLUMN_NAME] = $colume->COLUMN_COMMENT;
+        }
+        if ($returnType == 'string') {
+            return "'" . implode("', '", array_keys($data)) . "'";
+        }
+        return $data;
     }
 
     protected function changeApp($app, $file, $namespace, $class, $type, $resource, $config)

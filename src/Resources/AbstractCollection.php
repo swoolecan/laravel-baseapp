@@ -11,6 +11,7 @@ use Swoolecan\Foundation\Resources\TraitCollection;
 class AbstractCollection extends ResourceCollection
 {
     use TraitCollection;
+    public $preserveKeys = true;
     public $with = ['code' => 200, 'message' => 'OK'];
 
     /**
@@ -38,6 +39,11 @@ class AbstractCollection extends ResourceCollection
             $collection->setScene($this->getScene());
             $collection->setRepository($this->repository);
             $collection->setSimpleResult($this->simpleResult);
+        }
+        if ($resource instanceof AbstractPaginator) {
+            foreach (['currentRole', 'currentPermission', 'current_user', 'rolePermissions', 'manager'] as $qElem) {
+                $resource->appends($qElem, null);
+            }
         }
         return $resource instanceof AbstractPaginator
             ? $resource->setCollection($this->collection)

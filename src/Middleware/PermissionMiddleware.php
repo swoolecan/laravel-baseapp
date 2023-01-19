@@ -13,16 +13,29 @@ class PermissionMiddleware
         $service = app()->make(\ModulePassport\Services\UserPermissionService::class);
         $route = \Request::route();
         $routeCode = $route->getName();
-        $permission = $service->getPointPermission($routeCode);
-        if (empty($permission)) {
-            $service->throwException(400, '操作不存在');
+        if (in_array($routeCode, [''])) {
+            return $next($request);
         }
         $rolePermissions = $request->get('rolePermissions');
+        $basePermission = $rolePermissions['basePermission'];
+        $check = false;
+        foreach ((array) $basePermission as $role => $pInfos) {
+            if (in_array($routeCode, array_keys($pInfos))) {
+                $request->request->set('currentPermission', $pInfos[$routeCode]);
+                $request->request->set('currentRole', $rolePermissions['roleDetails'][$role]);
+                $check = true;
+                break;
+            }
+        }
+        if (empty($check)) {
+            $service->resource->throwException(403, '操作不存在或您没有操作权限-' . $routeCode);
+        }
 
-        $check = $service->checkPermissionTo($permission, $rolePermissions);
+        //$permission = $service->getPointPermission($routeCode);
+        /*$check = $service->checkPermissionTo($permission, $rolePermissions);
         if (empty($check)) {
             $service->throwException(403, '无权进行该操作');
-        }
+        }*/
         return $next($request);
     }
 }
