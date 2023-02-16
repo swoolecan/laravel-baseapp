@@ -38,7 +38,7 @@ class GenResourceCommand extends AbstractCommand
     public function checkResource($databases, $config)
     {
         $validDatabases = ['mysql', 'infocms', 'shop', 'culture', 'paytrade', 'third', 'bigdata', 'bench'];
-        $validDatabases = ['culture'];
+        $validDatabases = ['infocms'];
         $correspondApps = ['mysql' => 'passport'];
         $correspondTables = [
             'passport' => ['auth-manager' => 'manager', 'auth-managerlog' => 'managerlog', 'auth-permission' => 'permission', 'auth-resource' => 'resource', 'auth-role' => 'role', 'auth-role-manager' => 'role-manager', 'auth-role-permission' => 'role-permission'],
@@ -61,7 +61,7 @@ class GenResourceCommand extends AbstractCommand
                 $resourceInfo = \DB::SELECT("SELECT * FROM `wp_auth_resource` WHERE `code` = '{$table}' AND `app` = '{$app}'");
                 $resourceSql .= $this->_checkResource($resourceInfo, $table, $app, $tData['comment']);
                 if (isset($resourceInfo[0]) && $resourceInfo[0]->controller) {
-                    //$datas = $this->_createFront($app, $table, $config);
+                    $datas = $this->_createFront($app, $table, $config);
                     $permissionSql .= $this->_checkPermission($table, $app, $tData['comment']);
                 }
             }
@@ -160,7 +160,7 @@ class GenResourceCommand extends AbstractCommand
         $content = file_get_contents($stubFile);
         $table = $this->getResource()->strOperation($resource, 'snake');
 
-        $fieldStr = $type == 'repository' ? $this->getPointField('double6', $table, 'string') : '';
+        $fieldStr = $type == 'repository' ? $this->getPointField('infocms', $table, 'string') : '';
         $content = str_replace(['%NAMESPACE%', '%CLASS%', '%TABLE%', '%FIELDSTR%'], [$namespace, $class, $table, $fieldStr], $content);
         $path = dirname($file);
         if (!is_dir($path)) {
