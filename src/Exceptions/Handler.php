@@ -2,6 +2,7 @@
 
 namespace Framework\Baseapp\Exceptions;
 
+use App\Exceptions\ParamException;
 use Exception;
 use Throwable;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -20,7 +21,8 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        BusinessException::class
+        BusinessException::class,
+        ParamException::class
         //AuthorizationException::class,
         //HttpException::class,
         //ModelNotFoundException::class,

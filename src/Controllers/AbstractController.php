@@ -31,11 +31,4 @@ abstract class AbstractController extends BaseController
     {
         return \responseJson($code, $message, $datas);
     }
-
-    public function successCustom($datas = [], $message = 'OK')
-    {
-        $message = $message ?: 'OK';
-        return \responseJsonCustom(200, $message, $datas);
-    }
-
 }

@@ -119,15 +119,16 @@ function responseJsonAsServerError($message = 'server error', $data = [], $extFi
  */
 function responseJson($code = 200, $message = 'success', $data = [], $extFields = [])
 {
+    $isBackend = request()->get('manager');
     $data = empty($data) ? (object)[] : $data;
-    $responseCodeFormat = config('app.responseCodeFormat');
+    $responseCodeFormat = $isBackend ? [] : config('app.responseCodeFormat');
     //print_r($responseCodeFormat);exit();
     if (!empty($responseCodeFormat)) {
         $code = $responseCodeFormat[$code] ?? $responseCodeFormat['default'];
     }
 
     //$responseData = compact('code', 'message', 'data');
-    $responseFormat = config('app.responseFormat');
+    $responseFormat = $isBackend ? [] : config('app.responseFormat');
     $codeKey = $responseFormat['code'] ?? 'code';
     $messageKey = $responseFormat['message'] ?? 'message';
     $dataKey = $responseFormat['data'] ?? 'data';
@@ -137,25 +138,6 @@ function responseJson($code = 200, $message = 'success', $data = [], $extFields 
         $dataKey => $data,
     ];
     $responseData = array_merge($responseData, $extFields);
-
-    return response()->json($responseData);
-}
-
-/**
- * 正常状态使用
- *
- * @param int    $code
- * @param string $message
- * @param array  $data
- * @param array  $extFields
- * @return \Illuminate\Http\JsonResponse
- */
-function ResponseJsonCustom($code = 200, $message = 'success', $data = [], $extFields = [])
-{
-    $data = empty($data) ? (object)[] : $data;
-    $data['status'] = $code == 200 ? 'success' : 'error';
-    $data['message'] = $message;
-    $responseData = array_merge($data, $extFields);
 
     return response()->json($responseData);
 }
