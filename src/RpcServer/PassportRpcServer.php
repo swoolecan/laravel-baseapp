@@ -62,7 +62,7 @@ class PassportRpcServer extends AbstractRpcServer
 
     public function getTagInfoDatas($params)
     {
-        return $this->getResource()->getObject('repository', 'passport-tagInfo')->getDatas($params);
+        return $this->getResource()->getObject('model', 'passport-tagInfo')->getDatas($params);
     }
 
     public function createTagInfos($params)
