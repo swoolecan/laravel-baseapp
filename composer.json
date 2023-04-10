@@ -21,8 +21,10 @@
         "mews/captcha": "^3.3",
         "symfony/dom-crawler": "^6.2",
         "tymon/jwt-auth": "^2.0",
-        "maatwebsite/excel": "^1.1",
-        "swoolecan/foundation": "dev-main"
+        "swoolecan/foundation": "dev-main",
+        "aliyuncs/oss-sdk-php": "^2.6",
+        "phpoffice/phpspreadsheet": "^1.28",
+        "fruitcake/laravel-cors": "dev-develop"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
