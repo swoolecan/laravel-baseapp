@@ -21,7 +21,8 @@
         "mews/captcha": "^3.3",
         "symfony/dom-crawler": "^6.2",
         "tymon/jwt-auth": "^2.0",
-        "maatwebsite/excel": "^1.1"
+        "maatwebsite/excel": "^1.1",
+        "swoolecan/foundation": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
