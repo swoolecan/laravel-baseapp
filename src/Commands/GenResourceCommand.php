@@ -168,7 +168,7 @@ class GenResourceCommand extends AbstractCommand
         $table = $this->getResource()->strOperation($resource, 'snake');
         $fieldStr = $type == 'repository' ? $this->getPointField('double6', $table, 'string') : '';
         $content = str_replace(['%NAMESPACE%', '%CLASS%', '%TABLE%', '%FIELDSTR%'], [$namespace, $class, $table, $fieldStr], $content);
-        if (!in_array($resource, ['paymentUser', 'paymentAccount', 'paymentOrderInfo', 'paymentOrderGoods'])) {
+        if (!in_array($resource, ['courseScene', 'coursePackageScene', 'resourceAttribute', 'resourceCategory'])) {
             return;
         }
         $path = dirname($file);

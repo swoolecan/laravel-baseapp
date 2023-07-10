@@ -29,6 +29,11 @@ class AbstractRequest extends FormRequest
         return new Rule();
     }
 
+    protected function _getKeyValues($field)
+    {
+        return Rule::in(array_keys($this->getRepository()->getKeyValues($field)));
+    }
+
     /**
      * The route to redirect to if validation fails.
      *

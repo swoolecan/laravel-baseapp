@@ -3,15 +3,13 @@
 namespace Framework\Baseapp\Exceptions;
 
 use App\Exceptions\ParamException;
-use Exception;
-use Throwable;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\AuthenticationException;
+use Throwable;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Framework\Baseapp\Exceptions\BusinessException;
 
 class Handler extends ExceptionHandler
 {
@@ -50,6 +48,17 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
+        //抛错记录header
+        if ($this->shouldntReport($exception)) {
+            return;
+        }
+        $headers = request()->header();
+        $inputs = request()->input();
+        $path = request()->path();
+        info($path, [
+            'headers' => $headers,
+            'inputs' => $inputs
+        ]);
         parent::report($exception);
     }
 
