@@ -99,7 +99,7 @@ class GenResourceCommand extends AbstractCommand
             //echo 'nooo - pppppppp-' . $app . '==' . $table . "\n";
             $sql = "('{$app}_{$table}_add', '{$table}', 'PARENTCODE', '添加{$tableName}', '{$app}', '{$table}', 'add', 'post', 0, 4, '', '', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n";
             $sql .= "('{$app}_{$table}_delete', '{$table}', 'PARENTCODE', '删除', '{$app}', '{$table}', 'delete', 'delete', 0, 5, '', '', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n";
-            $sql .= "('{$app}_{$table}_update', '{$table}', 'PARENTCODE', '编辑', '{$app}', '{$table}', 'update', 'post', 0, 5, '', '', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n";
+            $sql .= "('{$app}_{$table}_update', '{$table}', 'PARENTCODE', '编辑', '{$app}', '{$table}', 'update', 'put', 0, 5, '', '', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n";
             //$sql .= "('{$app}_{$table}_view', '{$table}', 'PARENTCODE', '查看', '{$app}', '{$table}', 'view', 'get', 0, 5, '', '', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n";
             $sql .= "('{$app}_{$table}_listinfo', '{$table}', 'PARENTCODE', '{$tableName}', '{$app}', '{$table}', 'listinfo', 'get', 99, 3, '', '', '{$this->currentTimestamp()}', '{$this->currentTimestamp()}'), \n \n";
             return $sql;

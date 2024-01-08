@@ -7,12 +7,18 @@ use Illuminate\Support\Collection;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
 use Swoolecan\Foundation\Resources\TraitCollection;
+use Framework\Baseapp\Helpers\ResourceContainer;
 
 class AbstractCollection extends ResourceCollection
 {
     use TraitCollection;
     public $preserveKeys = true;
     public $with = ['code' => 200, 'message' => 'OK'];
+
+    public function getResource()
+    {
+        return app(ResourceContainer::class);
+    }
 
     /**
      * Map the given collection resource into its individual resources.

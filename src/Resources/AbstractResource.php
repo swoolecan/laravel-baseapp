@@ -5,6 +5,7 @@ namespace Framework\Baseapp\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Swoolecan\Foundation\Resources\TraitResource;
+use Framework\Baseapp\Helpers\ResourceContainer;
 
 class AbstractResource extends JsonResource
 {
@@ -15,5 +16,10 @@ class AbstractResource extends JsonResource
     public function toArray($request = null): array
     {
         return $this->_toArray($request);
+    }
+
+    public function getResource()
+    {
+        return app(ResourceContainer::class);
     }
 }

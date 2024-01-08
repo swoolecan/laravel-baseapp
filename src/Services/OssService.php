@@ -36,10 +36,9 @@ class OssService extends AbstractService
 
         $data['system'] = $this->currentDriver;
         $data['filepath'] = $file;
+        print_r($data);
         $attachmentModel = $this->resource->getObject('model', 'passport-attachment');
         return $attachmentModel->create($data);
-        print_r($data);exit();
-        print_r($result);exit();
     }
 
     public function dealPut($file, $sourceFile, $type = 'local')
