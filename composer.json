@@ -1,5 +1,5 @@
 {
-    "name": "system/laravel-baseapp",
+    "name": "swoolecan/laravel-baseapp",
     "description": "Laravel baseapp",
     "keywords": ["framework", "laravel", "baseapp", "foundation"],
     "license": "MIT",

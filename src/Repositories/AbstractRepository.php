@@ -37,7 +37,7 @@ abstract class AbstractRepository extends BaseRepository
     }
 
     public function __call($name, $arguments)
-    {
+    {   
         return $this->model->{$name}(...$arguments);
     }
 

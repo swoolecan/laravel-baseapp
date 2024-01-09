@@ -128,5 +128,13 @@ class ResourceContainer
     public function getPointDomain($code = '')
     {
         $domain = config('app.' . $code);
+        return $domains[$code] ?? '';
+    }
+
+    public function customRecordDebug($title, $data = [])
+    {
+        if (config('app.inTest')) {
+            \Log::debug($title . '===' . serialize($data));
+        }
     }
 }

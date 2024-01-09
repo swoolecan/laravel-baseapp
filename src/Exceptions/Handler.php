@@ -2,14 +2,15 @@
 
 namespace Framework\Baseapp\Exceptions;
 
-use App\Exceptions\ParamException;
-use Illuminate\Auth\AuthenticationException;
+use Exception;
+use Throwable;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
-use Throwable;
+use Illuminate\Auth\AuthenticationException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Framework\Baseapp\Exceptions\BusinessException;
 
 class Handler extends ExceptionHandler
 {
@@ -19,8 +20,7 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        BusinessException::class,
-        ParamException::class
+        BusinessException::class
         //AuthorizationException::class,
         //HttpException::class,
         //ModelNotFoundException::class,
@@ -48,17 +48,6 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
-        //抛错记录header
-        if ($this->shouldntReport($exception)) {
-            return;
-        }
-        $headers = request()->header();
-        $inputs = request()->input();
-        $path = request()->path();
-        info($path, [
-            'headers' => $headers,
-            'inputs' => $inputs
-        ]);
         parent::report($exception);
     }
 
@@ -96,13 +85,23 @@ class Handler extends ExceptionHandler
                 return responseJsonAsBadRequest($exception->validator->errors()->first());
             }
 
-            return responseJsonAsServerError($exception->getMessage());
+            $message = $exception->getMessage();
+            if (function_exists('ding')) {
+                $currentWarehouseMark = config('app.currentWarehouseMark');
+                ding()->text($currentWarehouseMark . '===' . $message);
+            }
+            return responseJsonAsServerError($message);
         }
 
         /*if ($request->is('api/e-commerce*') && $exception instanceof ValidationException) {
             return  response()->json(['status'=>1,"msg"=>$exception->validator->errors()->first()]);
         }*/
 
+        if (function_exists('ding')) {
+            $currentWarehouseMark = config('app.currentWarehouseMark');
+            $message = $exception->getMessage();
+            ding()->text($currentWarehouseMark . '===' . $message);
+        }
         return parent::render($request, $exception);
     }
 }

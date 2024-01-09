@@ -31,28 +31,21 @@ class GenResourceCommand extends AbstractCommand
     {
         //print_r($resources);exit();
         foreach ($resources as $resourceBase => $elems) {
-           /* if($resourceBase == 'app-aggregateRecord') {
-                $this->createResource($resourceBase, $elems, $config);
-            }*/
             $this->createResource($resourceBase, $elems, $config);
         }
     }
 
     public function checkResource($databases, $config)
     {
-        $validDatabases = ['mysql', 'double6'];
-        $validDatabases = ['double6'];
+        $validDatabases = ['mysql', 'wmsystem'];
+        $validDatabases = ['wmsystem'];
         $correspondApps = ['mysql' => 'passport'];
         $correspondTables = [
             'passport' => ['auth-manager' => 'manager', 'auth-managerlog' => 'managerlog', 'auth-permission' => 'permission', 'auth-resource' => 'resource', 'auth-role' => 'role', 'auth-role-manager' => 'role-manager', 'auth-role-permission' => 'role-permission'],
         ];
         $resourceSql = "INSERT INTO `wp_auth_resource` (`app`, `code`, `name`, `controller`, `request`, `model`, `service`, `repository`, `resource`, `collection`, `created_at`, `updated_at`) VALUES \n";
         $permissionSql = "INSERT INTO `wp_auth_permission` ( `code`, `resource_code`, `parent_code`, `name`, `app`, `controller`, `action`, `method`, `orderlist`, `display`, `icon`, `extparam`, `created_at`, `updated_at`) VALUES \n";
-        $double6Ignores = [
-            'course-qrcode-config-copy','activity-study-plan','activity-study-plan-record','children-video','coupon','course-qrcode-config-copy','course-sync','information-cursor0729','parent-relationship','school-ext','section-study-record','section-sync','section-word-sync','source-material0916','source-material-copy1','spider-record','spider-scheduling','spider-scheduling-detail','statistic-user-daybak','statistic-userbak','user-assessment','user-data-bak','user-target','video-section-copy','word-sync',
-            'course-qrcode-config','common-class-fee-info','common-class-fee-record','plan-process','plan-resource','practice-game','user-name-record','user-plan-detail','user-word-search-record','video-section',
-        ];
-        $ignores = ['passport' => ['migrations'], 'infocms' => ['attachment'], 'double6' => $double6Ignores];
+        $ignores = ['passport' => ['migrations']];
         foreach ($validDatabases as $database) {
             $info = $databases[$database];
             $tables = $this->getTableDatas($info['database'], $database);
@@ -68,7 +61,7 @@ class GenResourceCommand extends AbstractCommand
                 $resourceInfo = \DB::SELECT("SELECT * FROM `wp_auth_resource` WHERE `code` = '{$table}' AND `app` = '{$app}'");
                 $resourceSql .= $this->_checkResource($resourceInfo, $table, $app, $tData['comment']);
                 if (isset($resourceInfo[0]) && $resourceInfo[0]->controller) {
-                    //$datas = $this->_createFront($app, $table, $config);
+                    $datas = $this->_createFront($app, $table, $config);
                     $permissionSql .= $this->_checkPermission($table, $app, $tData['comment']);
                 }
             }
@@ -111,7 +104,7 @@ class GenResourceCommand extends AbstractCommand
     {
         list($app, $resource) = explode('-', $resourceBase);
         foreach ($elems as $type => $elem) {
-            if (in_array($app, ['merchant'])) {
+            if (in_array($app, ['passport'])) {
                 continue;
             }
             if (strpos($elem, 'Framework') === 0) {
@@ -119,14 +112,14 @@ class GenResourceCommand extends AbstractCommand
             }
             $basefile = substr($elem, strpos($elem, '\\') + 1);
             $basefile = str_replace('\\', '/', $basefile) . '.php';
-            $file = $config['moduleBase'] . '/' . $app . '/' . $basefile;
+            $file = $config['moduleBase'] . '/' . $app . '/app/' . $basefile;
             $namespace = substr($elem, 0, strrpos($elem, '\\'));
             $class = substr($elem, strrpos($elem, '\\') + 1);
             if (file_exists($file)) {
                 //$this->changeApp($app, $file, $namespace, $class, $type, $resource, $config);
                 continue;
             }
-            //echo $file . "\n";
+            echo $file . "\n";
             //continue;
 
             $this->_createClass($file, $namespace, $class, $type, $resource, $config);
@@ -149,7 +142,7 @@ class GenResourceCommand extends AbstractCommand
         if (!file_exists($file)) {
             file_put_contents($file, $content);
         }
-
+        
         echo $plural . '---' . $camel . '-==' . $class . '==' . $app . '==' . $resource . '-=-=' . $file . "===\n";
         $datas[$app]['file'][] = "import {$class} from '@/applications/{$app}/{$class}'\n";
         $datas[$app]['class'][] = $class;
@@ -166,11 +159,9 @@ class GenResourceCommand extends AbstractCommand
         $stubFile = $config['stubPath'] . '/' . $type . '.stub';
         $content = file_get_contents($stubFile);
         $table = $this->getResource()->strOperation($resource, 'snake');
-        $fieldStr = $type == 'repository' ? $this->getPointField('double6', $table, 'string') : '';
+
+        $fieldStr = $type == 'repository' ? $this->getPointField('wmsystem', $table, 'string') : '';
         $content = str_replace(['%NAMESPACE%', '%CLASS%', '%TABLE%', '%FIELDSTR%'], [$namespace, $class, $table, $fieldStr], $content);
-        if (!in_array($resource, ['courseScene', 'coursePackageScene', 'resourceAttribute', 'resourceCategory'])) {
-            return;
-        }
         $path = dirname($file);
         if (!is_dir($path)) {
             if (!is_dir(dirname($path))) {
@@ -179,12 +170,7 @@ class GenResourceCommand extends AbstractCommand
             }
             mkdir($path);
         }
-        //if (substr($resource, 0, 9) == 'statistic') {
-        //if (in_array($resource, ['lessonWord'])) {
-            echo $file . "<br />";
-            file_put_contents($file, $content);
-        //}
-
+        file_put_contents($file, $content);
     }
 
     protected function getPointField($connection, $table, $returnType = 'array')
@@ -202,28 +188,6 @@ class GenResourceCommand extends AbstractCommand
             return "'" . implode("', '", array_keys($data)) . "'";
         }
         return $data;
-    }
-
-    protected function changeApp($app, $file, $namespace, $class, $type, $resource, $config)
-    {
-        //return ;
-        //$resources = ['attribute', 'attributeValue', 'goods', 'goodsAttribute', 'goodsSku', 'type', 'websiteGoods', 'websiteSku'];
-        $resources = ['cultureArticle', 'cultureCategory', 'rubbing', 'rubbingWord', 'rubbingDetail', 'calligrapher'];
-        echo $app . '==' . $resource . "\n";
-        if ($app == 'culture' && in_array($resource, $resources)) {
-            echo $namespace . '==' . $class . '--' . $type . '==' . $resource . "\n";
-            //$targetFile = str_replace($app, 'shop', $file);
-            $targetFile = $file;//str_replace($app, 'culture', $file);
-            $file = str_replace('culture', 'infocms', $file);
-            $content = file_get_contents($file);
-            //$content = str_replace(['Infocms', 'infocms'], ['Shop', 'shop'], $content);
-            $content = str_replace(['Infocms', 'infocms'], ['Culture', 'culture'], $content);
-            file_put_contents($targetFile, $content);
-            unlink($file);
-
-        }
-        //SELECT REPLACE(`code`, 'infocms_', 'shop_'), REPLACE(`parent_code`, 'infocms_', 'shop_') FROM `wp_auth_permission` WHERE `resource_code` IN ('attribute', 'attribute-value', 'goods', 'goods-attribute', 'goods-sku', 'type', 'website-goods', 'website-sku') AND `app` = 'infocms' ;
-        //UPDATE `wp_auth_permission` SET `code` = REPLACE(`code`, 'infocms_', 'shop_'), `parent_code` = REPLACE(`parent_code`, 'infocms_', 'shop_'), `app` = 'shop' WHERE `resource_code` IN ('attribute', 'attribute-value', 'goods', 'goods-attribute', 'goods-sku', 'type', 'website-goods', 'website-sku') AND `app` = 'infocms' ;
     }
 
     protected function currentTimestamp()
