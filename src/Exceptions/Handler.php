@@ -85,13 +85,23 @@ class Handler extends ExceptionHandler
                 return responseJsonAsBadRequest($exception->validator->errors()->first());
             }
 
-            return responseJsonAsServerError($exception->getMessage());
+            $message = $exception->getMessage();
+            if (function_exists('ding')) {
+                $currentWarehouseMark = config('app.currentWarehouseMark');
+                ding()->text($currentWarehouseMark . '===' . $message);
+            }
+            return responseJsonAsServerError($message);
         }
 
         /*if ($request->is('api/e-commerce*') && $exception instanceof ValidationException) {
             return  response()->json(['status'=>1,"msg"=>$exception->validator->errors()->first()]);
         }*/
 
+        if (function_exists('ding')) {
+            $currentWarehouseMark = config('app.currentWarehouseMark');
+            $message = $exception->getMessage();
+            ding()->text($currentWarehouseMark . '===' . $message);
+        }
         return parent::render($request, $exception);
     }
 }

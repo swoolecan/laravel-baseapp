@@ -5,6 +5,7 @@ namespace Framework\Baseapp\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Swoolecan\Foundation\Helpers\TraitResourceManager;
 use Swoolecan\Foundation\Requests\TraitRequest;
 
 /**
@@ -17,6 +18,7 @@ use Swoolecan\Foundation\Requests\TraitRequest;
 class AbstractRequest extends FormRequest
 {
     use TraitRequest;
+    use TraitResourceManager;
 
     public function __construct($params = [])
     {
