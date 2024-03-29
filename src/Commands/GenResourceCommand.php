@@ -148,7 +148,7 @@ class GenResourceCommand extends AbstractCommand
         $datas[$app]['class'][] = $class;
         $datas['all'][] = $resource;
         $dContent = implode('', $datas[$app]['file']);
-        $dContent .= "\nexport default {" . implode(', ', $datas[$app]['class']) . '}';
+        $dContent .= "\nexport default {\n  " . implode(",\n  ", $datas[$app]['class']) . "\n}";
         $dFile = $config['frontPath'] . '/' . $app . '/database.js';
         file_put_contents($dFile, $dContent);
         return $datas;
@@ -173,13 +173,14 @@ class GenResourceCommand extends AbstractCommand
         file_put_contents($file, $content);
     }
 
-    protected function getPointField($connection, $table, $returnType = 'array')
+    public function getPointField($connection, $table, $returnType = 'array')
     {
         $db = \DB::connection($connection);
         $config = $db->getConfig();
         $str = '';
         $where['TABLE_NAME'] = $config['prefix'] . $table;
-        $columes = $db->table(\DB::raw('information_schema.COLUMNS'))->where($where)->get();
+        $where['TABLE_SCHEMA'] = $config['database'];
+        $columes = $db->table(\DB::raw('information_schema.COLUMNS'))->where($where)->orderBy('ORDINAL_POSITION', 'asc')->get();
         $data = [];
         foreach ($columes as $colume) {
             $data[$colume->COLUMN_NAME] = $colume->COLUMN_COMMENT;
