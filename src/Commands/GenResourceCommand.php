@@ -37,8 +37,8 @@ class GenResourceCommand extends AbstractCommand
 
     public function checkResource($databases, $config)
     {
-        $validDatabases = ['mysql', 'wmsystem'];
-        $validDatabases = ['wmsystem'];
+        $validDatabases = ['mysql', 'wmsystem', 'printsys'];
+        $validDatabases = ['printsys'];
         $correspondApps = ['mysql' => 'passport'];
         $correspondTables = [
             'passport' => ['auth-manager' => 'manager', 'auth-managerlog' => 'managerlog', 'auth-permission' => 'permission', 'auth-resource' => 'resource', 'auth-role' => 'role', 'auth-role-manager' => 'role-manager', 'auth-role-permission' => 'role-permission'],
@@ -148,7 +148,7 @@ class GenResourceCommand extends AbstractCommand
         $datas[$app]['class'][] = $class;
         $datas['all'][] = $resource;
         $dContent = implode('', $datas[$app]['file']);
-        $dContent .= "\nexport default {" . implode(', ', $datas[$app]['class']) . '}';
+        $dContent .= "\nexport default {\n  " . implode(",\n  ", $datas[$app]['class']) . "\n}";
         $dFile = $config['frontPath'] . '/' . $app . '/database.js';
         file_put_contents($dFile, $dContent);
         return $datas;
@@ -160,7 +160,7 @@ class GenResourceCommand extends AbstractCommand
         $content = file_get_contents($stubFile);
         $table = $this->getResource()->strOperation($resource, 'snake');
 
-        $fieldStr = $type == 'repository' ? $this->getPointField('wmsystem', $table, 'string') : '';
+        $fieldStr = $type == 'repository' ? $this->getPointField('printsys', $table, 'string') : '';
         $content = str_replace(['%NAMESPACE%', '%CLASS%', '%TABLE%', '%FIELDSTR%'], [$namespace, $class, $table, $fieldStr], $content);
         $path = dirname($file);
         if (!is_dir($path)) {
@@ -173,13 +173,14 @@ class GenResourceCommand extends AbstractCommand
         file_put_contents($file, $content);
     }
 
-    protected function getPointField($connection, $table, $returnType = 'array')
+    public function getPointField($connection, $table, $returnType = 'array')
     {
         $db = \DB::connection($connection);
         $config = $db->getConfig();
         $str = '';
         $where['TABLE_NAME'] = $config['prefix'] . $table;
-        $columes = $db->table(\DB::raw('information_schema.COLUMNS'))->where($where)->get();
+        $where['TABLE_SCHEMA'] = $config['database'];
+        $columes = $db->table(\DB::raw('information_schema.COLUMNS'))->where($where)->orderBy('ORDINAL_POSITION', 'asc')->get();
         $data = [];
         foreach ($columes as $colume) {
             $data[$colume->COLUMN_NAME] = $colume->COLUMN_COMMENT;
