@@ -147,12 +147,8 @@ class GenResourceCommand extends AbstractCommand
         $datas[$app]['file'][] = "import {$class} from '@/applications/{$app}/{$class}'\n";
         $datas[$app]['class'][] = $class;
         $datas['all'][] = $resource;
-        //$dContent = '';
-        $dContent = "import Setting from '@/applications/printsys/Setting'\n";
-        $dContent .= "import Dashboard from '@/applications/printsys/Dashboard'\n\n";
-        $dContent .= implode('', $datas[$app]['file']);
-        //$dContent .= "\nexport default {\n" . implode(",\n  ", $datas[$app]['class']) . "\n}";
-        $dContent .= "\nexport default {\n  Setting,\n  Dashboard,\n  " . implode(",\n  ", $datas[$app]['class']) . "\n}";
+        $dContent = implode('', $datas[$app]['file']);
+        $dContent .= "\nexport default {\n  " . implode(",\n  ", $datas[$app]['class']) . "\n}";
         $dFile = $config['frontPath'] . '/' . $app . '/database.js';
         file_put_contents($dFile, $dContent);
         return $datas;
