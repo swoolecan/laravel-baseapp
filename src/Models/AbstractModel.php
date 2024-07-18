@@ -37,11 +37,16 @@ class AbstractModel extends Model
         if ($type == 'keyValue') {
             $datas = [];
             foreach ($results as $result) {
-                $datas[$result->getName()] = $result->getComment();//empty($result['column_comment']) ? $result['column_name'] : $result['column_comment'];
+                $datas[$result->getName()] = $this->formatPointFieldName($result->getComment());//empty($result['column_comment']) ? $result['column_name'] : $result['column_comment'];
             }
             return $datas;
         }
         return $results;
+    }
+
+    public function formatPointFieldName($fName)
+    {
+        return $fName;
     }
 
     public function __construct(array $attributes = [])
