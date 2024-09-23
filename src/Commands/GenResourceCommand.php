@@ -23,8 +23,8 @@ class GenResourceCommand extends AbstractCommand
     {
         $type = $this->argument('type');
         $options = $this->option('options');
-        file_put_contents('/tmp/text.txt', date('Y-m-d H:i:s') . '--'. $type. '==' . $options . 'ssssssssss', FILE_APPEND);
-        echo 'sssssssssss';exit();
+        //file_put_contents('/tmp/text.txt', date('Y-m-d H:i:s') . '--'. $type. '==' . $options . 'ssssssssss', FILE_APPEND);
+        exit();
     }
 
     public function createResources($resources, $config)
@@ -37,15 +37,24 @@ class GenResourceCommand extends AbstractCommand
 
     public function checkResource($databases, $config)
     {
-        $validDatabases = ['mysql', 'infocms', 'shop', 'culture', 'paytrade', 'third', 'bigdata', 'bench'];
-        $validDatabases = ['infocms'];
+        $validDatabases = $config['validDatabases'];
         $correspondApps = ['mysql' => 'passport'];
         $correspondTables = [
-            'passport' => ['auth-manager' => 'manager', 'auth-managerlog' => 'managerlog', 'auth-permission' => 'permission', 'auth-resource' => 'resource', 'auth-role' => 'role', 'auth-role-manager' => 'role-manager', 'auth-role-permission' => 'role-permission'],
+            'passport' => [
+                'auth-application-user' => 'application-user',
+                'auth-application' => 'application',
+                'auth-manager' => 'manager',
+                'auth-managerlog' => 'managerlog',
+                'auth-permission' => 'permission',
+                'auth-resource' => 'resource',
+                'auth-role' => 'role',
+                'auth-role-manager' => 'role-manager',
+                'auth-role-permission' => 'role-permission'
+            ],
         ];
         $resourceSql = "INSERT INTO `wp_auth_resource` (`app`, `code`, `name`, `controller`, `request`, `model`, `service`, `repository`, `resource`, `collection`, `created_at`, `updated_at`) VALUES \n";
         $permissionSql = "INSERT INTO `wp_auth_permission` ( `code`, `resource_code`, `parent_code`, `name`, `app`, `controller`, `action`, `method`, `orderlist`, `display`, `icon`, `extparam`, `created_at`, `updated_at`) VALUES \n";
-        $ignores = ['passport' => ['migrations'], 'infocms' => ['attachment']];
+        $ignores = ['passport' => ['migrations']];
         foreach ($validDatabases as $database) {
             $info = $databases[$database];
             $tables = $this->getTableDatas($info['database'], $database);
@@ -104,7 +113,7 @@ class GenResourceCommand extends AbstractCommand
     {
         list($app, $resource) = explode('-', $resourceBase);
         foreach ($elems as $type => $elem) {
-            if (in_array($app, ['merchant'])) {
+            if (in_array($app, ['passport'])) {
                 continue;
             }
             if (strpos($elem, 'Framework') === 0) {
@@ -122,7 +131,7 @@ class GenResourceCommand extends AbstractCommand
             echo $file . "\n";
             //continue;
 
-            $this->_createClass($file, $namespace, $class, $type, $resource, $config);
+            $this->_createClass($file, $namespace, $class, $type, $resource, $config, $app);
         }
     }
 
@@ -136,36 +145,46 @@ class GenResourceCommand extends AbstractCommand
         $camel = $this->getResource()->strOperation($plural, 'camel');
         $file = $config['frontPath'] . '/' . $app . '/' . $class . '.js';
         $mark = isset($datas['all']) && in_array($resource, $datas['all']) ? $app . ucfirst($camel) : $camel;
+        //$mark = $app . ucfirst($camel);
         $stubFile = $config['stubPath'] . '/front.stub';
         $content = file_get_contents($stubFile);
         $content = str_replace(['{{APP}}', '{{RESOURCE}}', '{{URESOURCE}}', '{{RESOURCEMARK}}'], [$app, $plural, $class, $mark], $content);
         if (!file_exists($file)) {
             file_put_contents($file, $content);
         }
-        
+
         echo $plural . '---' . $camel . '-==' . $class . '==' . $app . '==' . $resource . '-=-=' . $file . "===\n";
         $datas[$app]['file'][] = "import {$class} from '@/applications/{$app}/{$class}'\n";
         $datas[$app]['class'][] = $class;
         $datas['all'][] = $resource;
         $dContent = '';
-        //$dContent = "import Setting from '@/applications/printsys/Setting'\n";
-        //$dContent .= "import Dashboard from '@/applications/printsys/Dashboard'\n\n";
+        if ($app == 'printsys') {
+            $dContent = "import Setting from '@/applications/printsys/Setting'\n";
+            $dContent .= "import Dashboard from '@/applications/printsys/Dashboard'\n\n";
+        }
+        if ($app == 'printsys') {
+            $dContent = "import Setting from '@/applications/prosystem/Setting'\n";
+        }
         $dContent .= implode('', $datas[$app]['file']);
-        $dContent .= "\nexport default {\n" . implode(",\n  ", $datas[$app]['class']) . "\n}";
-        //$dContent .= "\nexport default {\n  Setting,\n  Dashboard,\n  " . implode(",\n  ", $datas[$app]['class']) . "\n}";
-
+        if ($app == 'printsys') {
+            $dContent .= "\nexport default {\n  Setting,\n  Dashboard,\n  " . implode(",\n  ", $datas[$app]['class']) . "\n}";
+        } else if ($app == 'prosystem') {
+            $dContent .= "\nexport default {\n  Setting,\n  " . implode(",\n  ", $datas[$app]['class']) . "\n}";
+        } else {
+            $dContent .= "\nexport default {\n  " . implode(",\n  ", $datas[$app]['class']) . "\n}";
+        }
         $dFile = $config['frontPath'] . '/' . $app . '/database.js';
         file_put_contents($dFile, $dContent);
         return $datas;
     }
 
-    protected function _createClass($file, $namespace, $class, $type, $resource, $config)
+    protected function _createClass($file, $namespace, $class, $type, $resource, $config, $app)
     {
         $stubFile = $config['stubPath'] . '/' . $type . '.stub';
         $content = file_get_contents($stubFile);
         $table = $this->getResource()->strOperation($resource, 'snake');
 
-        $fieldStr = $type == 'repository' ? $this->getPointField('infocms', $table, 'string') : '';
+        $fieldStr = $type == 'repository' ? $this->getPointField($app, $table, 'string') : '';
         $content = str_replace(['%NAMESPACE%', '%CLASS%', '%TABLE%', '%FIELDSTR%'], [$namespace, $class, $table, $fieldStr], $content);
         $path = dirname($file);
         if (!is_dir($path)) {
