@@ -23,12 +23,14 @@ class BackendMiddleware
         if (empty($manager)) {
             $service->resource->throwException(403, '您没有操作权限nom');
         }
-        $rolePermissions = $service->getRolePermissions($manager);
+        $applicationCode = request()->header('application-code');
+        $rolePermissions = $service->getRolePermissions($manager, $applicationCode);
         if (empty($rolePermissions)) {
             $service->resource->throwException(403, '您没有操作权限norp');
         }
         $request->request->set('manager', $manager);
         $request->request->set('rolePermissions', $rolePermissions);
+        $request->request->set('applicationCode', $applicationCode);
 
         return $next($request);
     }
