@@ -57,6 +57,19 @@ if (! function_exists('config_path')) {
     }
 }
 
+if (! function_exists('self_app_path')) {
+    /**
+     * Get the path to the application folder.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function self_app_path($app, $path = '')
+    {
+        return base_path() . '/vendor/candocker/' . $app . ($path ? DIRECTORY_SEPARATOR.$path : $path);
+    }
+}
+
 if (! function_exists('app_path')) {
     /**
      * Get the path to the application folder.

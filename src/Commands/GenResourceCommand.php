@@ -70,7 +70,7 @@ class GenResourceCommand extends AbstractCommand
                 $resourceInfo = \DB::SELECT("SELECT * FROM `wp_auth_resource` WHERE `code` = '{$table}' AND `app` = '{$app}'");
                 $resourceSql .= $this->_checkResource($resourceInfo, $table, $app, $tData['comment']);
                 if (isset($resourceInfo[0]) && $resourceInfo[0]->controller) {
-                    $datas = $this->_createFront($app, $table, $config);
+                    $datas = $this->_createFront($app, $table, $config['resourcePath']);
                     $permissionSql .= $this->_checkPermission($table, $app, $tData['comment']);
                 }
             }
@@ -125,7 +125,6 @@ class GenResourceCommand extends AbstractCommand
             $namespace = substr($elem, 0, strrpos($elem, '\\'));
             $class = substr($elem, strrpos($elem, '\\') + 1);
             if (file_exists($file)) {
-                //$this->changeApp($app, $file, $namespace, $class, $type, $resource, $config);
                 continue;
             }
             echo $file . "\n";
@@ -213,28 +212,6 @@ class GenResourceCommand extends AbstractCommand
             return "'" . implode("', '", array_keys($data)) . "'";
         }
         return $data;
-    }
-
-    protected function changeApp($app, $file, $namespace, $class, $type, $resource, $config)
-    {
-        //return ;
-        //$resources = ['attribute', 'attributeValue', 'goods', 'goodsAttribute', 'goodsSku', 'type', 'websiteGoods', 'websiteSku'];
-        $resources = ['cultureArticle', 'cultureCategory', 'rubbing', 'rubbingWord', 'rubbingDetail', 'calligrapher'];
-        echo $app . '==' . $resource . "\n";
-        if ($app == 'culture' && in_array($resource, $resources)) {
-            echo $namespace . '==' . $class . '--' . $type . '==' . $resource . "\n";
-            //$targetFile = str_replace($app, 'shop', $file);
-            $targetFile = $file;//str_replace($app, 'culture', $file);
-            $file = str_replace('culture', 'infocms', $file);
-            $content = file_get_contents($file);
-            //$content = str_replace(['Infocms', 'infocms'], ['Shop', 'shop'], $content);
-            $content = str_replace(['Infocms', 'infocms'], ['Culture', 'culture'], $content);
-            file_put_contents($targetFile, $content);
-            unlink($file);
-
-        }
-        //SELECT REPLACE(`code`, 'infocms_', 'shop_'), REPLACE(`parent_code`, 'infocms_', 'shop_') FROM `wp_auth_permission` WHERE `resource_code` IN ('attribute', 'attribute-value', 'goods', 'goods-attribute', 'goods-sku', 'type', 'website-goods', 'website-sku') AND `app` = 'infocms' ;
-        //UPDATE `wp_auth_permission` SET `code` = REPLACE(`code`, 'infocms_', 'shop_'), `parent_code` = REPLACE(`parent_code`, 'infocms_', 'shop_'), `app` = 'shop' WHERE `resource_code` IN ('attribute', 'attribute-value', 'goods', 'goods-attribute', 'goods-sku', 'type', 'website-goods', 'website-sku') AND `app` = 'infocms' ;
     }
 
     protected function currentTimestamp()
