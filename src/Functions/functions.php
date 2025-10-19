@@ -2,6 +2,32 @@
 
 require __DIR__ . '/response.php';
 
+if (! function_exists('getChinesYear')) {
+    function getChineseYear($year, $return = 'string')
+    {
+        // 天干
+        $heavenlyStems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+        // 地支
+        $earthlyBranches = [
+            '子' => '鼠', '丑' => '牛', '寅' => '虎', '卯' => '兔', '辰' => '龙', '巳' => '蛇',
+            '午' => '马', '未' => '羊', '申' => '猴', '酉' => '鸡', '戌' => '狗', '亥' => '猪'
+        ];
+        $branchKeys = array_keys($earthlyBranches);
+
+        $year = $year < 0 ? $year + 1 : $year;
+        //var_dump($year);exit();
+        $stemIndex = (($year - 4) % 10 + 10) % 10;
+        $branchIndex = (($year - 4) % 12 + 12) % 12;
+        $stemName = $heavenlyStems[$stemIndex];
+        $branchName = $branchKeys[$branchIndex];
+        $branchValue = $earthlyBranches[$branchName];
+        if ($return = 'string') {
+            return "农历{$stemName}{$branchName}年（{$branchValue}年）。";
+        }
+        return ['stemName' => $stemName, 'branchName' => $branchName, 'branchValue' => $branchValue];
+    }
+}
+
 if (! function_exists('initDatabaseData')) {
     function initDatabaseData($elems)
     {
